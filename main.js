@@ -11,7 +11,7 @@
 // @include http://gatewaysitedown.playneverwinter.com
 // @include http://gatewaysitedown.playneverwinter.com/*
 // @require http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js
-// @resource jqUI_CSS http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/flick/jquery-ui.css
+// @resource jqUI_CSS http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/dark-hive/jquery-ui.css
 // @originalAuthor Mustex/Bunta
 // @modifiedBy NW gateway Professions Bot Developers & Contributors
 
@@ -261,6 +261,8 @@ var s_paused = false;	   // extend the paused setting to the Page Reloading func
 
 // Include JqueryUI CSS
 var jqUI_CssSrc = GM_getResourceText ("jqUI_CSS");
+jqUI_CssSrc = jqUI_CssSrc.replace (/url\(images\//g, "url(http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/dark-hive/images/");
+jqUI_CssSrc = jqUI_CssSrc.replace (/font-size: 1\.1em/g, "font-size: 0.9em");
 GM_addStyle (jqUI_CssSrc);
 
 (function () {
@@ -2103,7 +2105,33 @@ GM_addStyle (jqUI_CssSrc);
 #settingsPanel input[type='button'].button-red{background:#ca3c3c; margin: 2px 2px 2px 2px;}\
 #settingsPanel input[type='button'].button-yellow{background:#df7514; margin: 2px 2px 2px 2px;}\
 #settingsPanel input[type='button'].button-blue{background:#42b8dd; margin: 2px 2px 2px 2px;}\
+#panelGenSettings,#panelAutoLogin,#panelADTransfer,#panelAutoVendor { display: block; width: 100%; border: 2px groove gray; background: #ccc; padding: 5px; }\
 ");
+	$("body").append('\
+		<div id="ngpbMain" style="position: fixed; top: 0px; left: 180px; display: block; z-index: 1001;">\
+			<div style="display: block; width: 100%; padding: 5px 0 5px 5px;" class="ui-widget-header">\
+			  <button id="play">play</button>\
+			  <input type="checkbox" id="debug"><label for="debug">Debug</label>\
+			  <input type="checkbox" id="toggleGenSettings"><label for="toggleGenSettings">General</label>\
+			  <input type="checkbox" id="toggleAutoLogin"><label for="toggleAutoLogin">Auto Login</label>\
+			  <input type="checkbox" id="toggleADTransfer"><label for="toggleADTransfer">AD Transfer</label>\
+			  <input type="checkbox" id="toggleAutoVendor"><label for="toggleAutoVendor">Auto Vendor</label>\
+			</div>\
+			<div id="panelGenSettings" class="ui-widget">\
+			   <input type="checkbox" id="optionals"><label for="optionals">Fill Optional Assets</label>\
+			   <input type="checkbox" id="autopurchase"><label for="autopurchase">Auto Purchase Resources</label>\
+			   <input type="checkbox" id="trainassets"><label for="trainassets">Train Assets</label>\
+			</div>\
+			<div id="panelAutoLogin" class="ui-widget">\
+				<input type="checkbox" id="autologin"><label for="autologin">Enable Auto Login</label>\
+				<label for="nw_username">NW User:</label>\
+				<input type="text" name="nw_username" id="nw_username" value="" class="text ui-widget-content ui-corner-all">\
+				<label for="nw_username">NW Pass:</label>\
+				<input type="text" name="nw_password" id="nw_password" value="" class="text ui-widget-content ui-corner-all">\
+			</div>\
+			<div id="panelADTransfer" class="ui-widget"></div>\
+			<div id="panelAutoVendor" class="ui-widget"></div>\
+		</div>');
 
 		// Add settings panel to page body
 		$("body").append(
@@ -2313,6 +2341,99 @@ document.getElementById("charContainer"+val).style.display="block";\
 				$("button#nwprofs-autovendor").on("click", vendorJunk);
 			}
 		});
+		
+		// NEW JQUERY-UI TESTING CODE
+		$("#play").button({
+		    text : false,
+		    icons : {
+		        primary : "ui-icon-play"
+		    }
+		})
+		.click(function () {
+		    var options;
+		    if ($(this).text() === "play") {
+		        options = {
+		            label : "pause",
+		            icons : {
+		                primary : "ui-icon-pause"
+		            }
+		        };
+		    } else {
+		        options = {
+		            label : "play",
+		            icons : {
+		                primary : "ui-icon-play"
+		            }
+		        };
+		    }
+		    $(this).button("option", options);
+		});
+		$("#stop").button({
+		    text : false,
+		    icons : {
+		        primary : "ui-icon-stop"
+		    }
+		})
+		.click(function () {
+		    $("#play").button("option", {
+		        label : "play",
+		        icons : {
+		            primary : "ui-icon-play"
+		        }
+		    });
+		});
+		$("#toggleGenSettings").button({
+		    icons : {
+		        primary : "ui-icon-gear",
+		        secondary : "ui-icon-triangle-1-s"
+		    }
+		}).click(function () {
+		    if ($("#toggleAutoLogin").prop("checked"))
+		        $('#toggleAutoLogin').trigger('click');
+		    $('#panelGenSettings').toggle();
+		});
+
+		$("#toggleAutoLogin").button({
+		    icons : {
+		        primary : "ui-icon-gear",
+		        secondary : "ui-icon-triangle-1-s"
+		    }
+		}).click(function () {
+		    if ($("#toggleGenSettings").prop("checked"))
+		        $('#toggleGenSettings').trigger('click');
+		    $('#panelAutoLogin').toggle();
+		});
+
+		$("#toggleADTransfer").button({
+		    icons : {
+		        primary : "ui-icon-gear",
+		        secondary : "ui-icon-triangle-1-s"
+		    }
+		});
+		$("#toggleAutoVendor").button({
+		    icons : {
+		        primary : "ui-icon-gear",
+		        secondary : "ui-icon-triangle-1-s"
+		    }
+		});
+		$("#debug").button({
+		    icons : {
+		        primary : "ui-icon-info"
+		    },
+		    text : false
+		});
+		$("#optionals").button();
+		$("#autopurchase").button();
+		$("#trainassets").button();
+		$("#autologin").button();
+		$('#panelGenSettings').toggle();
+		$('#panelAutoLogin').toggle();
+		$('#panelADTransfer').toggle();
+		$('#panelAutoVendor').toggle();
+		
+		//move gateway notification position from top
+		$('#div.notification').css('top','50px !important');
+
 	}
 
 	function PauseSettings(_action) {
