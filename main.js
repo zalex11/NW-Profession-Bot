@@ -10,6 +10,8 @@
 // @include http://gateway.playneverwinter.com/*
 // @include http://gatewaysitedown.playneverwinter.com
 // @include http://gatewaysitedown.playneverwinter.com/*
+// @require http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js
+// @resource jqUI_CSS http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/flick/jquery-ui.css
 // @originalAuthor Mustex/Bunta
 // @modifiedBy NW gateway Professions Bot Developers & Contributors
 
@@ -29,6 +31,8 @@
 // @grant GM_setValue
 // @grant GM_listValues
 // @grant GM_deleteValue
+// @grant GM_addStyle
+// @grant GM_getResourceText
 // ==/UserScript==
 
 /* RELEASE NOTES
@@ -254,6 +258,10 @@ var chardiamonds = {};
 // Every second the page is idle or loading is tracked
 var loading_reset = false; // Enables a periodic reload if this is toggled on by the Auto Reload check box on the settings panel
 var s_paused = false;	   // extend the paused setting to the Page Reloading function
+
+// Include JqueryUI CSS
+var jqUI_CssSrc = GM_getResourceText ("jqUI_CSS");
+GM_addStyle (jqUI_CssSrc);
 
 (function () {
 	var $ = unsafeWindow.$;
