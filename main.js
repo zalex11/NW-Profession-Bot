@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name Neverwinter gateway - Professions Robot
+// @name Neverwinter gateway - Personal Fork
 // @description Automatically selects professions for empty slots
 // @namespace https://greasyfork.org/scripts/9812-neverwinter-gateway-professions-robot/
 // @include http://gateway*.playneverwinter.com/*
@@ -576,7 +576,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskName: "WinterEvent",
         taskDefaultPriority: 1,
         taskDefaultSlotNum: 0,
-        taskActive: false,
+        taskActive: true,
         taskDescription: "",
         profiles: [{
             profileName: "default",
@@ -601,7 +601,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskName: "Event_Siege",
         taskDefaultPriority: 1,
         taskDefaultSlotNum: 0,
-        taskActive: false,
+        taskActive: true,
         taskDescription: "",
         profiles: [{
             profileName: "default",
@@ -625,7 +625,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskName: "BlackIce",
         taskDefaultPriority: 1,
         taskDefaultSlotNum: 0,
-        taskActive: false,
+        taskActive: true,
         taskDescription: "",
         profiles: [{
             profileName: "default",
@@ -654,7 +654,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription : "",
         profiles : [{
             profileName : "default",
-            isProfileActive : true,
+            isProfileActive : false,
             level : {
                 0 : ["Jewelcrafting_Tier0_Intro"],
                 1 : ["Jewelcrafting_Tier1_Waist_Offense_1", "Jewelcrafting_Tier1_Refine_Basic", "Jewelcrafting_Tier1_Gather_Basic"],
@@ -690,7 +690,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Jewelcrafting", {
         profileName : "mass refining",
-        isProfileActive : true,
+        isProfileActive : false,
         useMassTask : true,
         level : {
             0: ["Jewelcrafting_Tier0_Intro"],
@@ -703,7 +703,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Jewelcrafting", {
         profileName: "21->25 gather",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             21: ["Jewelcrafting_Tier4_Refine_Basic_Mass", "Jewelcrafting_Tier4_Gather_Basic"],
         },
@@ -712,7 +712,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Jewelcrafting", {
         profileName: "Craft Purple Neck",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             // we care only about neck items that we can start pile up at lvl 16
             16: ["Jewelcrafting_Tier3_Neck_Offense_3", "Jewelcrafting_Tier3_Refine_Basic", "Jewelcrafting_Tier3_Gather_Basic", "Jewelcrafting_Tier2_Gather_Basic", "Jewelcrafting_Tier1_Gather_Basic"],
@@ -729,7 +729,7 @@ function _select_Gateway() { // Check for Gateway used to
     
     addProfile("Jewelcrafting", {
         profileName: "Craft Purple Rings",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             // we care only about neck items that we can start pile up at lvl 15
             15: ["Jewelcrafting_Tier3_Ring_Offense_3", "Jewelcrafting_Tier3_Refine_Basic", "Jewelcrafting_Tier3_Gather_Basic", "Jewelcrafting_Tier2_Gather_Basic", "Jewelcrafting_Tier1_Gather_Basic"],
@@ -747,7 +747,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Jewelcrafting", {
         profileName: "Craft Purple lvl 25",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Jewelcrafting_Tier4_Ring_Offense_4_Purple", //Exquisite Adamant Ring of Piercing
                 "Jewelcrafting_Tier4_Ring_Misc_4_Purple", //Exquisite Adamant Ring of Recovery
@@ -766,11 +766,11 @@ function _select_Gateway() { // Check for Gateway used to
         taskName : "Armorsmithing_Med",
         taskDefaultPriority : 1,
         taskDefaultSlotNum : 0,
-        taskActive : false,
+        taskActive : true,
         taskDescription : "",
         profiles : [{
             profileName : "default",
-            isProfileActive : true,
+            isProfileActive : false,
             level : {
                 0 : ["Med_Armorsmithing_Tier0_Intro"],
                 1 : ["Med_Armorsmithing_Tier1_Gather_Basic"],
@@ -805,7 +805,7 @@ function _select_Gateway() { // Check for Gateway used to
     
     addProfile("Mailsmithing", {
         profileName : "mass refining",
-        isProfileActive : true,
+        isProfileActive : false,
         useMassTask : true,
         level : {
             0: ["Med_Armorsmithing_Tier0_Intro"],
@@ -818,7 +818,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "21->25 gather",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             21: ["Crafted_Med_Armorsmithing_T4_Refine_Basic_Mass", "Crafted_Med_Armorsmithing_T4_Gather_Basic_Mass"],
             25: ["Crafted_Med_Armorsmithing_T4_Refine_Basic", "Crafted_Med_Armorsmithing_T4_Gather_Basic"],
@@ -828,7 +828,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Berserker's Chausses and rares",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
                 "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
@@ -850,7 +850,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Soldier's Chausses and rares",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
                 "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
@@ -871,7 +871,7 @@ function _select_Gateway() { // Check for Gateway used to
     
     addProfile("Mailsmithing", {
         profileName: "Soldier's Chainmail and rares",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
                 "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
@@ -892,7 +892,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Berserker's Chainmail and rares",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
                 "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
@@ -913,7 +913,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Zealot's Chausses and rares",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
@@ -935,7 +935,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Zealot's Chainmail and rares",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
@@ -957,7 +957,7 @@ function _select_Gateway() { // Check for Gateway used to
    
     addProfile("Mailsmithing", {
         profileName: "Prelate's Chainmail and rares",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
@@ -979,7 +979,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Prelate's Chausses and rares",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
@@ -1001,7 +1001,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "craft rares only",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
@@ -1031,11 +1031,11 @@ function _select_Gateway() { // Check for Gateway used to
         taskName: "Armorsmithing_Heavy",
         taskDefaultPriority: 1,
         taskDefaultSlotNum: 0,
-        taskActive: false,
+        taskActive: true,
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: true,
+            isProfileActive: false,
             level: {
                 0: ["Hvy_Armorsmithing_Tier0_Intro"],
                 1: ["Hvy_Armorsmithing_Tier1_Plate_Boots_1", "Hvy_Armorsmithing_Tier1_Plate_Shirt_1", "Hvy_Armorsmithing_Tier1_Gather_Basic"],
@@ -1069,7 +1069,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Platesmithing", {
         profileName : "mass refining",
-        isProfileActive : true,
+        isProfileActive : false,
         useMassTask : true,
         level : {
             0: ["Hvy_Armorsmithing_Tier0_Intro"],
@@ -1082,7 +1082,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Platesmithing", {
         profileName: "21->25 gather",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             21: ["Crafted_Hvy_Armorsmithing_T4_Refine_Basic_Mass", "Crafted_Hvy_Armorsmithing_T4_Gather_Basic_Mass"],
         },
@@ -1101,11 +1101,11 @@ function _select_Gateway() { // Check for Gateway used to
         taskName : "Leatherworking",
         taskDefaultPriority : 1,
         taskDefaultSlotNum : 0,
-        taskActive : false,
+        taskActive : true,
         taskDescription : "",
         profiles : [{
             profileName : "default",
-            isProfileActive : true,
+            isProfileActive : false,
             level : {
                 0 : ["Leatherworking_Tier0_Intro_1"],
                 1 : ["Leatherworking_Tier1_Leather_Boots_1", "Leatherworking_Tier1_Leather_Shirt_1", "Leatherworking_Tier1_Gather_Basic"],
@@ -1140,7 +1140,7 @@ function _select_Gateway() { // Check for Gateway used to
     
     addProfile("Leatherworking", {
         profileName : "mass refining",
-        isProfileActive : true,
+        isProfileActive : false,
         useMassTask : true,
         level : {
             0: ["Leatherworking_Tier0_Intro_1"],
@@ -1153,7 +1153,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Leatherworking", {
         profileName: "20->25 gather",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             20: ["Leatherworking_Tier3_Leather_Pants"],
             21: ["Leatherworking_Tier4_Refine_Basic_Mass", "Leatherworking_Tier4_Gather_Basic"],
@@ -1281,7 +1281,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Tailoring", {
         profileName : "mass refining",
-        isProfileActive : true,
+        isProfileActive : false,
         useMassTask : true,
         level : {
             0: ["Tailoring_Tier0_Intro"],
@@ -1294,7 +1294,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Tailoring", {
         profileName: "21->25 gather",
-        isProfileActive: true,
+        isProfileActive: false,
         level: {
             21: ["Crafted_Tailoring_T4_Refine_Basic_Mass", "Crafted_Tailoring_T4_Gather_Basic_Mass"],
             25: ["Crafted_Tailoring_T4_Refine_Basic", "Crafted_Tailoring_T4_Gather_Basic"],
@@ -1319,7 +1319,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: true,
+            isProfileActive: false,
             level: {
                 0: ["Artificing_Tier0_Intro_1"],
                 1: ["Artificing_Tier1_Pactblade_Convergence_1", "Artificing_Tier1_Symbol_Virtuous_1", "Artificing_Tier1_Gather_Basic"],
@@ -1354,7 +1354,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Artificing", {
         profileName : "mass refining",
-        isProfileActive : true,
+        isProfileActive : false,
         useMassTask : true,
         level : {
             0: ["Artificing_Tier0_Intro_1"],
@@ -1379,11 +1379,11 @@ function _select_Gateway() { // Check for Gateway used to
         taskName: "Weaponsmithing",
         taskDefaultPriority: 1,
         taskDefaultSlotNum: 0,
-        taskActive: false,
+        taskActive: true,
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: true,
+            isProfileActive: false,
             level: {
                 0: ["Weaponsmithing_Tier0_Intro"],
                 1: ["Weaponsmithing_Tier1_Dagger_1", "Weaponsmithing_Tier1_Gather_Basic"],
@@ -1418,7 +1418,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Weaponsmithing", {
         profileName : "mass refining",
-        isProfileActive : true,
+        isProfileActive : false,
         useMassTask : true,
         level : {
             0: ["Weaponsmithing_Tier0_Intro"],
