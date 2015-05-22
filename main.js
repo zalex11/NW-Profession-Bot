@@ -474,7 +474,7 @@ function _select_Gateway() { // Check for Gateway used to
                 25: ["Leadership_Tier4_25r_Huntexperiment",  "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier3_13r_Protectdiamonds",
                     "Leadership_Tier2_12_Taxes", "Leadership_Tier4_24r_Killdragon", "Leadership_Tier4_25_Battleelementalcultists",
                      "Leadership_Tier3_20_Destroy",  "Leadership_Tier3_16_Fight", 
-                ],
+                ]
                 //r hunt 166 + artifact
                 //r capture 125
                 //r protect 114
@@ -580,7 +580,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: false,
+            isProfileActive: true,
             level: {
                 0: ["Event_Winter_Tier0_Intro"],
                 1: ["Event_Winter_Tier1_Rankup", /*"Event_Winter_Tier1_Shiny_Lure",*/
@@ -605,7 +605,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: false,
+            isProfileActive: true,
             level: {
                 0: ["Event_Siege_Tier0_Intro"], // Hire a Siege Master
                 //1:["Event_Siege_Tier1_Donate_Minorinjury"], // Create Defense Supplies from Minor Injury Kits
@@ -629,7 +629,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: false,
+            isProfileActive: true,
             level: {
                 1: ["Blackice_Tier1_Process_Blackice","Blackice_Tier1_Recruit_Blackice_Smith"],
                 2: ["Blackice_Tier1_Process_Blackice","Blackice_Tier2_Recruit_Assistant_Cryomancer"],
@@ -654,7 +654,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription : "",
         profiles : [{
             profileName : "default",
-            isProfileActive : false,
+            isProfileActive : true,
             level : {
                 0 : ["Jewelcrafting_Tier0_Intro"],
                 1 : ["Jewelcrafting_Tier1_Waist_Offense_1", "Jewelcrafting_Tier1_Refine_Basic", "Jewelcrafting_Tier1_Gather_Basic"],
@@ -770,7 +770,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription : "",
         profiles : [{
             profileName : "default",
-            isProfileActive : false,
+            isProfileActive : true,
             level : {
                 0 : ["Med_Armorsmithing_Tier0_Intro"],
                 1 : ["Med_Armorsmithing_Tier1_Gather_Basic"],
@@ -1035,7 +1035,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: false,
+            isProfileActive: true,
             level: {
                 0: ["Hvy_Armorsmithing_Tier0_Intro"],
                 1: ["Hvy_Armorsmithing_Tier1_Plate_Boots_1", "Hvy_Armorsmithing_Tier1_Plate_Shirt_1", "Hvy_Armorsmithing_Tier1_Gather_Basic"],
@@ -1105,7 +1105,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription : "",
         profiles : [{
             profileName : "default",
-            isProfileActive : false,
+            isProfileActive : true,
             level : {
                 0 : ["Leatherworking_Tier0_Intro_1"],
                 1 : ["Leatherworking_Tier1_Leather_Boots_1", "Leatherworking_Tier1_Leather_Shirt_1", "Leatherworking_Tier1_Gather_Basic"],
@@ -1319,7 +1319,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: false,
+            isProfileActive: true,
             level: {
                 0: ["Artificing_Tier0_Intro_1"],
                 1: ["Artificing_Tier1_Pactblade_Convergence_1", "Artificing_Tier1_Symbol_Virtuous_1", "Artificing_Tier1_Gather_Basic"],
@@ -1383,7 +1383,7 @@ function _select_Gateway() { // Check for Gateway used to
         taskDescription: "",
         profiles: [{
             profileName: "default",
-            isProfileActive: false,
+            isProfileActive: true,
             level: {
                 0: ["Weaponsmithing_Tier0_Intro"],
                 1: ["Weaponsmithing_Tier1_Dagger_1", "Weaponsmithing_Tier1_Gather_Basic"],
