@@ -321,97 +321,6 @@ function _select_Gateway() { // Check for Gateway used to
         return;
     }
 
-    /*
-     adds new profession and new profile to task list.
-     
-     profession 
-     - name as string of profession to add.  Will create new one if not found
-     - object. will extend or create new profession 
-     Will extend default definition- > can be short
-     
-     profile 
-     - new profile to add.  Set recursiveList to false not use resursive list generation
-     Will extend default definition- > can be short
-     
-     base 
-     - name as string of prifile to use as extension. 
-     Will extend default definition- > can be short
-     */
-    function addProfile(profession, profile, base)
-    {
-        maxLevel = maxLevel || 25;
-        definedTask = definedTask || {};
-        //general prototype for profession
-        var professionBase = {
-            taskListName: profession, // Friendly name used at the UI
-            taskName: profession, // String used at the gateway
-            taskDefaultPriority: 2, // Priority to allocate free task slots: 0 - High, 1 - Medium, 2 - Low
-            taskActive: true,
-            taskDefaultSlotNum: 0,
-            taskDescription: "",
-            profiles: []
-        };
-
-        //profile prototype
-        var profileBase = {
-            profileName: 'Add profile name',
-            isProfileActive: true,
-            recursiveList: true,
-            level: {}
-        };
-
-        //creating new profession or using existing one 
-        var professionSet = (typeof profession === 'object')
-            ? jQuery.extend(true, professionBase, profession)
-            : definedTask[profession] || professionBase;
-        if(!professionSet) {
-            return;
-        }
-
-        if(!definedTask[profession]) {
-            definedTask[profession] = professionSet;
-            }
-
-        if(!profile) {
-            return;
-        }
-
-        //getting base one to extend
-        var newProfile = jQuery.extend(true, {}, profileBase);
-
-        if(!base) {
-            base = (professionSet.taskListName === 'Leadership' ? 'XP' : 'default');
-    }
-
-        if(base && typeof base === 'string') {
-            var existing = professionSet.profiles.filter(function(e) {
-                return e.profileName === base;
-            });
-            if(existing) {
-                newProfile = jQuery.extend(true, newProfile, existing.length ? existing[0] : existing);
-            }
-        }
-
-        if(!profile.hasOwnProperty('recursiveList')) {
-            profile.recursiveList = true;
-        }
-        newProfile = jQuery.extend(true, newProfile, profile);
-        //setting levels
-        for(var i = 0; i <= maxLevel; i++) {
-            //override
-            if(profile.level && profile.level[i]) {
-                newProfile.level[i] = profile.level[i];
-                continue;
-            }
-            //iterate and set
-            if(newProfile.recursiveList && i > 0) {
-                newProfile.level[i] = newProfile.level[i - 1];
-            }
-        }
-
-        professionSet.profiles.push(newProfile);
-    }
-
 
     /*
      * Tasklist can be modified to configure the training you want to perform.
@@ -522,55 +431,7 @@ function _select_Gateway() { // Check for Gateway used to
             },
         }]
     };
-
-    addProfile("Leadership", {
-        profileName: "Resource/AD",
-        level: {
-            // DL
-            16: ["Leadership_Tier3_16r_Buildshelters", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_16_Fight", "Leadership_Tier3_13_Patrol", "Leadership_Tier3_17_Deliver", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
-            17: ["Leadership_Tier3_16r_Buildshelters", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_17_Deliver", "Leadership_Tier3_13_Patrol", "Leadership_Tier3_17_Deliver", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
-            18: ["Leadership_Tier3_16r_Buildshelters", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_17r_Raidmines", "Leadership_Tier3_13_Patrol", "Leadership_Tier3_17_Deliver", , "Leadership_Tier3_17_Deliver", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
-            19: ["Leadership_Tier3_16r_Buildshelters", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_17r_Raidmines", "Leadership_Tier3_13_Patrol", "Leadership_Tier3_17_Deliver", , "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
-            // 20
-            20: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3",
-                "Leadership_Tier3_20_Destroy", "Leadership_Tier3_18_Resell", "Leadership_Tier3_13r_Protectdiamonds",
-                "Leadership_Tier3_16r_Buildshelters", "Leadership_Tier3_13_Patrol", "Leadership_Tier3_19_Acquire", "Leadership_Tier3_17_Deliver",
-                "Leadership_Tier3_15_Rescue", "Leadership_Tier2_9_Chart", "Leadership_Tier2_12_Taxes", "Leadership_Tier1_5_Explore"
-            ],
-            21: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier4_21r_Killelemental",
-                "Leadership_Tier3_20_Destroy", "Leadership_Tier4_21_Protectmagic",
-                "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier2_12_Taxes", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
-            ],
-            22: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier4_21r_Killelemental",
-                "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier3_20_Destroy", "Leadership_Tier4_21_Protectmagic", "Leadership_Tier4_22_Guardclerics",
-                "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier2_12_Taxes", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
-            ],
-            23: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3",
-                "Leadership_Tier4_23r_Securepilgrimage", "Leadership_Tier4_21r_Killelemental",
-                "Leadership_Tier4_23_Guardnoble", "Leadership_Tier3_20_Destroy", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier4_21_Protectmagic", "Leadership_Tier4_22_Guardclerics",
-                "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier2_12_Taxes", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
-            ],
-            24: ["Leadership_Tier4_24r_Killdragon",
-                "Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier4_23r_Securepilgrimage",
-                "Leadership_Tier4_24_Wizardsseneschal", "Leadership_Tier4_23_Guardnoble", "Leadership_Tier3_20_Destroy", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier4_21_Protectmagic", "Leadership_Tier4_22_Guardclerics", "Leadership_Tier4_21r_Killelemental",
-                "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier2_12_Taxes", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
-            ],
-            25: ["Leadership_Tier4_25r_Huntexperiment", "Leadership_Tier4_24r_Killdragon",
-                "Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier4_23r_Securepilgrimage",
-                "Leadership_Tier4_25_Battleelementalcultists", "Leadership_Tier4_24_Wizardsseneschal", "Leadership_Tier4_23_Guardnoble", "Leadership_Tier3_20_Destroy", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier4_21_Protectmagic", "Leadership_Tier4_22_Guardclerics", "Leadership_Tier4_21r_Killelemental",
-                "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier2_12_Taxes", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
-            ],
-        }
-    }, "AD");
-
-    addProfile("Leadership", {
-        profileName: "Assets",
-        isProfileActive: false,
-        level: {
-            3: ["Leadership_Tier3_13_Recruit", "Leadership_Tier2_7_Recruit", "Leadership_Tier1_2_Recruit"],
-        }
-    });
-
+    
     definedTask["Winter Event"] = {
         taskListName: "WinterEvent",
         taskName: "WinterEvent",
@@ -688,79 +549,6 @@ function _select_Gateway() { // Check for Gateway used to
         }]
     };
 
-    addProfile("Jewelcrafting", {
-        profileName : "mass refining",
-        isProfileActive : false,
-        useMassTask : true,
-        level : {
-            0: ["Jewelcrafting_Tier0_Intro"],
-            1: ["Jewelcrafting_Tier1_Refine_Basic_Mass", "Jewelcrafting_Tier1_Gather_Basic"],
-            7: ["Jewelcrafting_Tier2_Refine_Basic_Mass"],
-            14: ["Jewelcrafting_Tier3_Refine_Basic_Mass"],
-            21: ["Jewelcrafting_Tier4_Refine_Basic_Mass"],
-        },
-    });    
-
-    addProfile("Jewelcrafting", {
-        profileName: "21->25 gather",
-        isProfileActive: false,
-        level: {
-            21: ["Jewelcrafting_Tier4_Refine_Basic_Mass", "Jewelcrafting_Tier4_Gather_Basic"],
-        },
-    });
-
-
-    addProfile("Jewelcrafting", {
-        profileName: "Craft Purple Neck",
-        isProfileActive: false,
-        level: {
-            // we care only about neck items that we can start pile up at lvl 16
-            16: ["Jewelcrafting_Tier3_Neck_Offense_3", "Jewelcrafting_Tier3_Refine_Basic", "Jewelcrafting_Tier3_Gather_Basic", "Jewelcrafting_Tier2_Gather_Basic", "Jewelcrafting_Tier1_Gather_Basic"],
-            25: ["Jewelcrafting_Tier4_Neck_Offense_4_Purple", //Exquisite Adamant Necklace of Piercing
-                  "Jewelcrafting_Tier4_Neck_Misc_4_Purple", // Exquisite Adamant Necklace of Recovery 
-                  "Jewelcrafting_Tier4_Neck_Defense_4_Purple",//Exquisite Adamant Necklace of Regeneration
-                  "Jewelcrafting_Tier4_Ring_Offense_4_Purple",//Exquisite Adamant Ring of Piercing
-                  "Jewelcrafting_Tier4_Ring_Misc_4_Purple",//Exquisite Adamant Ring of Recovery
-                  "Jewelcrafting_Tier4_Ring_Defense_4_Purple",//Exquisite Adamant Ring of Regeneration
-                  "Jewelcrafting_Tier3_Neck_Offense_3", 
-                  "Jewelcrafting_Tier2_Refine_Basic", "Jewelcrafting_Tier1_Refine_Basic"],
-        },
-    });
-    
-    addProfile("Jewelcrafting", {
-        profileName: "Craft Purple Rings",
-        isProfileActive: false,
-        level: {
-            // we care only about neck items that we can start pile up at lvl 15
-            15: ["Jewelcrafting_Tier3_Ring_Offense_3", "Jewelcrafting_Tier3_Refine_Basic", "Jewelcrafting_Tier3_Gather_Basic", "Jewelcrafting_Tier2_Gather_Basic", "Jewelcrafting_Tier1_Gather_Basic"],
-            25: ["Jewelcrafting_Tier4_Ring_Offense_4_Purple", //Exquisite Adamant Ring of Piercing
-                "Jewelcrafting_Tier4_Ring_Misc_4_Purple", //Exquisite Adamant Ring of Recovery
-                "Jewelcrafting_Tier4_Ring_Defense_4_Purple", //Exquisite Adamant Ring of Regeneration
-                  "Jewelcrafting_Tier4_Neck_Offense_4_Purple", //Exquisite Adamant Necklace of Piercing
-                  "Jewelcrafting_Tier4_Neck_Misc_4_Purple", // Exquisite Adamant Necklace of Recovery 
-                  "Jewelcrafting_Tier4_Neck_Defense_4_Purple",//Exquisite Adamant Necklace of Regeneration
-                  "Jewelcrafting_Tier3_Ring_Offense_3",  
-                  "Jewelcrafting_Tier3_Refine_Basic"]
-        },
-    });
-    
-
-    addProfile("Jewelcrafting", {
-        profileName: "Craft Purple lvl 25",
-        isProfileActive: false,
-        level: {
-            25: ["Jewelcrafting_Tier4_Ring_Offense_4_Purple", //Exquisite Adamant Ring of Piercing
-                "Jewelcrafting_Tier4_Ring_Misc_4_Purple", //Exquisite Adamant Ring of Recovery
-                "Jewelcrafting_Tier4_Ring_Defense_4_Purple", //Exquisite Adamant Ring of Regeneration
-                  "Jewelcrafting_Tier4_Neck_Offense_4_Purple", //Exquisite Adamant Necklace of Piercing
-                  "Jewelcrafting_Tier4_Neck_Misc_4_Purple", // Exquisite Adamant Necklace of Recovery - !!check name!!
-                  "Jewelcrafting_Tier4_Neck_Defense_4_Purple",//Exquisite Adamant Necklace of Regeneration
-                  "Jewelcrafting_Tier3_Refine_Basic"//timeout task
-                  ],
-        },
-    }); 
-   
-
     definedTask["Mailsmithing"] = {
         taskListName : "Mailsmithing",
         taskName : "Armorsmithing_Med",
@@ -803,229 +591,7 @@ function _select_Gateway() { // Check for Gateway used to
         }]
     };
     
-    addProfile("Mailsmithing", {
-        profileName : "mass refining",
-        isProfileActive : false,
-        useMassTask : true,
-        level : {
-            0: ["Med_Armorsmithing_Tier0_Intro"],
-            1: ["Med_Armorsmithing_Tier1_Refine_Basic_Mass", "Med_Armorsmithing_Tier1_Gather_Basic"],
-            7: ["Med_Armorsmithing_Tier2_Refine_Basic_Mass"],
-            14: ["Med_Armorsmithing_Tier3_Refine_Basic_Mass"],
-            21: ["Crafted_Med_Armorsmithing_T4_Refine_Basic_Mass"],
-        },
-    });    
-
-    addProfile("Mailsmithing", {
-        profileName: "21->25 gather",
-        isProfileActive: false,
-        level: {
-            21: ["Crafted_Med_Armorsmithing_T4_Refine_Basic_Mass", "Crafted_Med_Armorsmithing_T4_Gather_Basic_Mass"],
-            25: ["Crafted_Med_Armorsmithing_T4_Refine_Basic", "Crafted_Med_Armorsmithing_T4_Gather_Basic"],
-        },
-    });
-    
-
-    addProfile("Mailsmithing", {
-        profileName: "Berserker's Chausses and rares",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-                  
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Green_Pants_Dps",//Berserker's Elemental Chausses
-                "Med_Armorsmithing_Tier3_Refine_Basic"
-
-            ],
-        },
-    });
-
-    addProfile("Mailsmithing", {
-        profileName: "Soldier's Chausses and rares",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Green_Pants_Tank",//Soldier's Elemental Chausses
-                "Med_Armorsmithing_Tier3_Refine_Basic"
-                ],
-            },
-        });
-    
-    addProfile("Mailsmithing", {
-        profileName: "Soldier's Chainmail and rares",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                      
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-                      
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Green_Shirt_Tank",//Soldier's Elemental Chainmail
-                "Med_Armorsmithing_Tier3_Refine_Basic"
-                ],
-            },
-        });
-
-    addProfile("Mailsmithing", {
-        profileName: "Berserker's Chainmail and rares",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                      
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Green_Shirt_Dps",//Berserker's Elemental Chainmail
-                "Med_Armorsmithing_Tier3_Refine_Basic"
-                ],
-            },
-        });
-
-    addProfile("Mailsmithing", {
-        profileName: "Zealot's Chausses and rares",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                      
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Chain_T4_Green_Pants_Dps",//Berserker's Elemental Chainmail
-                "Med_Armorsmithing_Tier3_Refine_Basic"
-                ],
-            },
-        });
-
-    addProfile("Mailsmithing", {
-        profileName: "Zealot's Chainmail and rares",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                      
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-                      
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Chain_T4_Green_Shirt_Dps",//Zealot's Elemental Chainmail
-                "Med_Armorsmithing_Tier3_Refine_Basic"
-                ],
-            },
-        });
-   
-    addProfile("Mailsmithing", {
-        profileName: "Prelate's Chainmail and rares",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                      
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Chain_T4_Green_Shirt_Tank",//Prelate's Elemental Chainmail
-                "Med_Armorsmithing_Tier3_Refine_Basic"
-                ],
-            },
-        });
-
-    addProfile("Mailsmithing", {
-        profileName: "Prelate's Chausses and rares",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
-                      
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                      
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Chain_T4_Green_Pants_Tank",//Prelate's Elemental Chainmail
-                "Med_Armorsmithing_Tier3_Refine_Basic"
-                ]
-            },
-        });
-
-    addProfile("Mailsmithing", {
-        profileName: "craft rares only",
-        isProfileActive: false,
-        level: {
-            25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
-                      
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
-                "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
-                     
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
-
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
-                "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
-                   "Med_Armorsmithing_Tier2_Refine_Basic"]
-        }
-    }); 
-
-    addProfile("Mailsmithing", {
-        profileName: "Wondrous Sprocket",
-        isProfileActive: false,
-        level: {
-            6: ["Med_Armorsmithing_Tier1_Event_Gond"],
-        },
-    });
-
+ 
     definedTask["Platesmithing"] = {
         taskListName: "Platesmithing",
         taskName: "Armorsmithing_Heavy",
@@ -1066,35 +632,6 @@ function _select_Gateway() { // Check for Gateway used to
             },
         }]
     };
-
-    addProfile("Platesmithing", {
-        profileName : "mass refining",
-        isProfileActive : false,
-        useMassTask : true,
-        level : {
-            0: ["Hvy_Armorsmithing_Tier0_Intro"],
-            1: ["Hvy_Armorsmithing_Tier1_Refine_Basic_Mass", "Hvy_Armorsmithing_Tier1_Gather_Basic"],
-            7: ["Hvy_Armorsmithing_Tier2_Refine_Basic_Mass"],
-            14: ["Hvy_Armorsmithing_Tier3_Refine_Basic_Mass"],
-            21: ["Crafted_Hvy_Armorsmithing_T4_Refine_Basic_Mass"],
-        },
-    });
-
-    addProfile("Platesmithing", {
-        profileName: "21->25 gather",
-        isProfileActive: false,
-        level: {
-            21: ["Crafted_Hvy_Armorsmithing_T4_Refine_Basic_Mass", "Crafted_Hvy_Armorsmithing_T4_Gather_Basic_Mass"],
-        },
-    });
-
-    addProfile("Platesmithing", {
-        profileName: "Wondrous Sprocket",
-        isProfileActive: false,
-        level: {
-            6: ["Hvy_Armorsmithing_Tier1_Event_Gond"],
-        },
-    });
 
     definedTask["Leatherworking"] = {
         taskListName : "Leatherworking",
@@ -1137,105 +674,7 @@ function _select_Gateway() { // Check for Gateway used to
             },
         }  ]
     };
-    
-    addProfile("Leatherworking", {
-        profileName : "mass refining",
-        isProfileActive : false,
-        useMassTask : true,
-        level : {
-            0: ["Leatherworking_Tier0_Intro_1"],
-            1: ["Leatherworking_Tier1_Refine_Basic_Mass", "Leatherworking_Tier1_Gather_Basic"],
-            7: ["Leatherworking_Tier2_Refine_Basic_Mass"],
-            14: ["Leatherworking_Tier3_Refine_Basic_Mass"],
-            21: ["Leatherworking_Tier4_Refine_Basic_Mass"],
-        },
-    });    
-
-    addProfile("Leatherworking", {
-        profileName: "20->25 gather",
-        isProfileActive: false,
-        level: {
-            20: ["Leatherworking_Tier3_Leather_Pants"],
-            21: ["Leatherworking_Tier4_Refine_Basic_Mass", "Leatherworking_Tier4_Gather_Basic"],
-            25: ["Leatherworking_Tier4_Refine_Basic", "Leatherworking_Tier4_Gather_Basic"],
-        },
-    });
-
-    addProfile("Leatherworking", {
-        profileName: "craft purples only",
-        level: {
-            //purples  first. shirts > tunics > pants.
-            25: ["Leatherworking_Tier4_Leather_Shirt_Special_2", //Exquisite Elemental Shirt
-                "Leatherworking_Tier4_Leather_Shirt_Special_2_Set2", //Exquisite Elemental Tunic
-                "Leatherworking_Tier4_Leather_Pants_Special_2_Set2", //Exquisite Elemental Trousers
-                  "Leatherworking_Tier4_Leather_Pants_Special_2", //Exquisite Elemental Pants
-                  "Leatherworking_Tier3_Gather_Basic"]
-        }
-    });
-
-    addProfile("Leatherworking", {
-        profileName: "craft  Elemental Shirts",
-        level: {
-            //purples  first. shirts > tunics > pants.
-            25: ['Leatherworking_Tier4_Leather_Shirt_Special_2', //Exquisite Elemental Shirt
-                'Leatherworking_Tier4_Leather_Shirt_Special_2_Set2', //Exquisite Elemental Tunic
-                'Leatherworking_Tier4_Leather_Pants_Special_2_Set2', //Exquisite Elemental Trousers
-                  'Leatherworking_Tier4_Leather_Pants_Special_2', //Exquisite Elemental Pants
-                'Leatherworking_Tier4_Leather_Shirt2', //Elemental Leather Shirt 
-                "Leatherworking_Tier3_Gather_Basic"
-                    ]
-        }
-    });
-
-    addProfile("Leatherworking", {
-        profileName: "craft  Elemental Tunic",
-        level: {
-            //purples  first. shirts > tunics > pants.
-            25: ['Leatherworking_Tier4_Leather_Shirt_Special_2_Set2', //Exquisite Elemental Tunic
-                'Leatherworking_Tier4_Leather_Shirt_Special_2', //Exquisite Elemental Shirt
-                'Leatherworking_Tier4_Leather_Pants_Special_2_Set2', //Exquisite Elemental Trousers
-                  'Leatherworking_Tier4_Leather_Pants_Special_2', //Exquisite Elemental Pants
-                'Leatherworking_Tier4_Leather_Shirt2_Set2', //Elemental Leather Tunic 
-                'Leatherworking_Tier3_Gather_Basic'
-                    ]
-        }
-    });
-   
-    addProfile("Leatherworking", {
-        profileName: "craft  Elemental Trousers(?)",
-        level: {
-            //purples  first. shirts > tunics > pants.
-            25: ['Leatherworking_Tier4_Leather_Pants_Special_2_Set2', //Exquisite Elemental Trousers
-                  'Leatherworking_Tier4_Leather_Pants_Special_2', //Exquisite Elemental Pants
-                'Leatherworking_Tier4_Leather_Shirt_Special_2_Set2', //Exquisite Elemental Tunic
-                'Leatherworking_Tier4_Leather_Shirt_Special_2', //Exquisite Elemental Shirt
-                'Leatherworking_Tier4_Leather_Pants2_Set2', //Elemental Leather Trousers 
-                'Leatherworking_Tier3_Gather_Basic'
-                    ]
-        }
-    });
-
-    addProfile("Leatherworking", {
-        profileName: "craft  Elemental Pants",
-        level: {
-            //purples  first. shirts > tunics > pants.
-            25: ['Leatherworking_Tier4_Leather_Pants_Special_2', //Exquisite Elemental Pants
-                'Leatherworking_Tier4_Leather_Pants_Special_2_Set2', //Exquisite Elemental Trousers
-                'Leatherworking_Tier4_Leather_Shirt_Special_2_Set2', //Exquisite Elemental Tunic
-                'Leatherdeworking_Tier4_Leather_Shirt_Special_2', //Exquisite Elemental Shirt
-                'Leatherworking_Tier4_Leather_Pants2', //Elemental Leather Trousers 
-                'Leatherworking_Tier3_Gather_Basic'
-                    ]
-        }
-    });
-
-    addProfile("Leatherworking", {
-        profileName: "Wondrous Sprocket",
-        isProfileActive: false,
-        level: {
-            6: ["Leatherworking_Tier1_Event_Gond"],
-        },
-    });
+  
 
     definedTask["Tailoring"] = {
         taskListName: "Tailoring",
@@ -1279,37 +718,6 @@ function _select_Gateway() { // Check for Gateway used to
         }]
     };
 
-    addProfile("Tailoring", {
-        profileName : "mass refining",
-        isProfileActive : false,
-        useMassTask : true,
-        level : {
-            0: ["Tailoring_Tier0_Intro"],
-            1: ["Tailoring_Tier1_Refine_Basic_Mass", "Tailoring_Tier1_Gather_Basic"],
-            7: ["Tailoring_Tier2_Refine_Basic_Mass"],
-            14: ["Tailoring_Tier3_Refine_Basic_Mass"],
-            21: ["Crafted_Tailoring_T4_Refine_Basic_Mass"],
-        },
-    });
-
-    addProfile("Tailoring", {
-        profileName: "21->25 gather",
-        isProfileActive: false,
-        level: {
-            21: ["Crafted_Tailoring_T4_Refine_Basic_Mass", "Crafted_Tailoring_T4_Gather_Basic_Mass"],
-            25: ["Crafted_Tailoring_T4_Refine_Basic", "Crafted_Tailoring_T4_Gather_Basic"],
-        },
-    });
-
-    addProfile("Tailoring", {
-        profileName: "Wondrous Sprocket",
-        isProfileActive: false,
-        level: {
-            6: ["Tailoring_Tier1_Event_Gond"],
-        },
-    });
-
-
     definedTask["Artificing"] = {
         taskListName: "Artificing",
         taskName: "Artificing",
@@ -1351,28 +759,6 @@ function _select_Gateway() { // Check for Gateway used to
             },
         }]
     };
-
-    addProfile("Artificing", {
-        profileName : "mass refining",
-        isProfileActive : false,
-        useMassTask : true,
-        level : {
-            0: ["Artificing_Tier0_Intro_1"],
-            1: ["Artificing_Tier1_Refine_Basic_Mass", "Artificing_Tier1_Gather_Basic"],
-            7: ["Artificing_Tier2_Refine_Basic_Mass"],
-            14: ["Artificing_Tier3_Refine_Basic_Mass"],
-            21: ["Artificing_Tier4_Refine_Basic_Mass"],
-        },
-    });
-
-    addProfile("Artificing", {
-        profileName: "Wondrous Sprocket",
-        isProfileActive: false,
-        level: {
-            6: ["Artificing_Tier1_Event_Gond"],
-        },
-    });
-
 
     definedTask["Weaponsmithing"] = {
         taskListName: "Weaponsmithing",
@@ -1416,27 +802,6 @@ function _select_Gateway() { // Check for Gateway used to
         }]
     };
 
-    addProfile("Weaponsmithing", {
-        profileName : "mass refining",
-        isProfileActive : false,
-        useMassTask : true,
-        level : {
-            0: ["Weaponsmithing_Tier0_Intro"],
-            1: ["Weaponsmithing_Tier1_Refine_Basic_Mass", "Weaponsmithing_Tier1_Gather_Basic"],
-            7: ["Weaponsmithing_Tier2_Refine_Basic_Mass"],
-            14: ["Weaponsmithing_Tier3_Refine_Basic_Mass"],
-            21: ["Weaponsmithing_Tier4_Refine_Basic_Mass"],
-        },
-    });
-
-    addProfile("Weaponsmithing", {
-        profileName: "Wondrous Sprocket",
-        isProfileActive: false,
-        level: {
-            6: ["Weaponsmithing_Tier1_Event_Gond"],
-        },
-    });
-
     definedTask["Alchemy"] = {
         taskListName: "Alchemy",
         taskName: "Alchemy",
@@ -1477,49 +842,7 @@ function _select_Gateway() { // Check for Gateway used to
             },
         }]
     };
-    addProfile("Alchemy", {
-        profileName: "Aqua Regia",
-        level: {
-            20: ["Alchemy_Tier2_Aquaregia", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Components"],
-            22: ["Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Components"]
-        }
-    });
-    addProfile("Alchemy", {
-        profileName: "Aqua Vitae",
-        level: {
-            20: ["Alchemy_Tier2_Aquavitae_2", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Components"],
-        }
-    });
-    addProfile("Alchemy", {
-        profileName: "Protection Superior",
-        level: {
-            25: ["Alchemy_Tier4_Experimentation_Rank25", "Alchemy_Tier4_Protection_Potion_Superior", "Alchemy_Tier4_Create_Elemental_Aggregate", "Alchemy_Tier3_Protection_Potion_Major", "Alchemy_Tier2_Aquaregia", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Components"],
-        }
-    });
-    addProfile("Alchemy", {
-        profileName: "Potency Superior",
-        level: {
-            25: ["Alchemy_Tier4_Experimentation_Rank25", "Alchemy_Tier4_Potency_Potion_Superior", "Alchemy_Tier4_Create_Elemental_Aggregate", "Alchemy_Tier3_Potency_Potion_Major", "Alchemy_Tier2_Aquaregia", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Components"],
-        }
-    }); 
-
-    addProfile("Alchemy", {
-        profileName: "Blue & Green Vitriol",
-        isProfileActive: true,
-        level: {
-            1: ["Alchemy_Tier1_Refine_Basic", "Alchemy_Tier1_Gather_Components"],
-        },
-    });
-
-    addProfile("Alchemy", {
-        profileName: "Wondrous Sprocket",
-        isProfileActive: false,
-        level: {
-            6: ["Alchemy_Tier1_Event_Gond"],
-        },
-    });
-
-
+ 
     // Profession priority list by order
     var tasklist = [
         definedTask["Leadership"],
@@ -1588,10 +911,10 @@ function _select_Gateway() { // Check for Gateway used to
 
     var defaultScriptSettings = {
         general: {
-            saveCharNextTime: true,
+            saveCharNextTime: false,
             scriptPaused: false,
             language: 'en',
-            scriptDebugMode: true,
+            scriptDebugMode: false,
             scriptAutoReload: false,
             autoLogin: false,
             autoLoginAccount: "",
@@ -1614,21 +937,6 @@ function _select_Gateway() { // Check for Gateway used to
         tempScriptSettings = {};
     };
     scriptSettings = $.extend(true, {}, defaultScriptSettings, tempScriptSettings);
-    
-    // Loading custom profiles.
-    try {
-        customProfiles = JSON.parse(GM_getValue("custom_profiles", null));
-    } catch (e) {
-        customProfiles = null;
-    }
-    if (!customProfiles) {
-        console.warn('Custom profiles couldn\'t be retrieved.');
-        customProfiles = [];
-    };
-    customProfiles.forEach(function (cProfile, idx) {
-        addProfile(cProfile.taskName, cProfile.profile, cProfile.baseProfile);
-    });
-    
 
     var delay_modifier = parseFloat(scriptSettings.general.scriptDelayFactor);
     delay.SHORT *= delay_modifier;      delay.MEDIUM *= delay_modifier;     delay.LONG *= delay_modifier; 
@@ -1657,11 +965,11 @@ function _select_Gateway() { // Check for Gateway used to
             autoPurchaseRes: true,
             trainAssets: false,
             smartLeadershipAssets: true,
-            skipPatrolTask: 'AD&Lvl20',
+            skipPatrolTask: 'never',
         },
         generalSettings: {
             refineAD: true,
-            openRewards: false,
+            openRewards: true,
             runSCA: 'never',
             SCADailyReset: Date.now() - 24*60*60*1000,
         },
@@ -1673,7 +981,6 @@ function _select_Gateway() { // Check for Gateway used to
             minToTransfer: 200000,
         },
     };
-
 
     var defaultCharSettings = {
         charName: "",
@@ -1707,8 +1014,8 @@ function _select_Gateway() { // Check for Gateway used to
         },
         generalSettings: {
             refineAD: true,
-            openRewards: false,
-            runSCA: 'free',
+            openRewards: true,
+            runSCA: 'never',
         },
         consolidationSettings: {
             consolidate: false,
@@ -2003,131 +1310,6 @@ function _select_Gateway() { // Check for Gateway used to
         // Add gold count
         chargold[curCharNum] = parseInt(unsafeWindow.client.dataModel.model.ent.main.currencies.gold);
         return false;
-    }
-
-
-
-    // Running SCA for a single Char (based on CycleSCA)
-    function processCharSCA(charIdx) {
-        var _hasLoginDaily = 0;
-        var _scaHashMatch = /\/adventures$/;
-        var _charName = charNamesList[charIdx];
-        var _fullCharName = _charName + "@" + loggedAccount;
-       /*
-       if (!scriptSettings.paused)
-            PauseSettings("pause");
-*/
-        if (!_scaHashMatch.test(unsafeWindow.location.hash)) {
-            return;
-        } else if (unsafeWindow.location.hash != "#char(" + encodeURI(_fullCharName) + ")/adventures") {
-            unsafeWindow.location.hash = "#char(" + encodeURI(_fullCharName) + ")/adventures";
-        }
-
-        WaitForState("").done(function() {
-            try {
-                _hasLoginDaily = client.dataModel.model.gatewaygamedata.dailies.left.logins;
-            } catch (e) {
-                window.setTimeout(function() {
-                    processCharSCA(charIdx);
-                }, delay.SHORT);
-                return;
-            }
-
-            console.log("Checking SCA Dialy for " + _charName );
-
-            // Do SCA daily dice roll if the button comes up
-            WaitForState(".daily-dice-intro").done(function() {
-                $(".daily-dice-intro button").trigger('click');
-                WaitForState(".daily-awards-button").done(function() {
-                    $(".daily-awards-button button").trigger('click');
-                });
-            });
-            
-            //console.log("after dice");
-            WaitForNotState(".modal-window.daily-dice").done(function() {
-                charStatisticsList[_charName].general.lastSCAVisit = Date.now();
-                GM_setValue("statistics__char__" + _fullCharName , JSON.stringify(charStatisticsList[_charName]));
-                updateCounters(false);
-
-                //Adjusting for the time the SCA took
-                var chardelay;
-                if (chartimers[curCharNum] != null) {
-                    chardelay = (chartimers[curCharNum]).getTime() - (new Date()).getTime() - unsafeWindow.client.getServerOffsetSeconds() * 1000;
-                    if (chardelay < delay.SHORT) {
-                        chardelay = delay.SHORT;
-                    }
-                }
-                else chardelay = delay.SHORT;
-                if (chardelay > (delay.SHORT * 3)) unsafeWindow.location.hash = "#char(" + encodeURI(_fullCharName) + ")/professions";
-                console.log("Finished SCA check for " + charNamesList[charIdx] + " delay " + chardelay);
-                dfdNextRun.resolve(chardelay);
-            });
-        });
-    }
-
-
-
-    /**
-     * Switch to a character's swordcoast adventures and collect the daily reward
-     */
-
-    function processSwordCoastDailies(_charStartIndex) {
-        var _accountName = unsafeWindow.client.dataModel.model.loginInfo.publicaccountname;
-        var _charIndex = (!_charStartIndex || parseInt(_charStartIndex) > (charNamesList.length + 1) || parseInt(_charStartIndex) < 0) ? 0 : parseInt(_charStartIndex);
-        var _fullCharName = charNamesList[_charIndex] + '@' + _accountName;
-        var _hasLoginDaily = 0;
-        var _isLastChar = false;
-        var _scaHashMatch = /\/adventures$/;
-        if (!scriptSettings.paused)
-            PauseSettings("pause");
-
-        // Switch to professions page to show task progression
-        if (!_scaHashMatch.test(unsafeWindow.location.hash)) {
-            return;
-        } else if (unsafeWindow.location.hash != "#char(" + encodeURI(_fullCharName) + ")/adventures") {
-            unsafeWindow.location.hash = "#char(" + encodeURI(_fullCharName) + ")/adventures";
-        }
-
-        if (_charIndex >= (charNamesList.length -1))
-            _isLastChar = true;
-
-        WaitForState("").done(function() {
-            try {
-                _hasLoginDaily = client.dataModel.model.gatewaygamedata.dailies.left.logins;
-            } catch (e) {
-                // TODO: Use callback function
-                window.setTimeout(function() {
-                    processSwordCoastDailies(_charIndex);
-                }, delay.SHORT);
-                return;
-            }
-
-            console.log("Checking SCA Dialy for", _fullCharName, "...");
-
-            // Do SCA daily dice roll if the button comes up
-            WaitForState(".daily-dice-intro").done(function() {
-                $(".daily-dice-intro button").trigger('click');
-                WaitForState(".daily-awards-button").done(function() {
-                    $(".daily-awards-button button").trigger('click');
-                });
-            });
-
-            // If Dice roll dialog is non existant
-            WaitForNotState(".modal-window.daily-dice").done(function() {
-                charStatisticsList[charNamesList[_charIndex]].general.lastSCAVisit = Date.now();
-                GM_setValue("statistics__char__" + _fullCharName , JSON.stringify(charStatisticsList[charNamesList[_charIndex]]));
-                updateCounters(false);
-                if (_isLastChar) {
-                    window.setTimeout(function() {
-                        PauseSettings("unpause");
-                    }, 3000);
-                } else {
-                    window.setTimeout(function() {
-                        processSwordCoastDailies(_charIndex + 1);
-                    }, 3000);
-                }
-            });
-        });
     }
 
     /**
@@ -2911,16 +2093,6 @@ function _select_Gateway() { // Check for Gateway used to
 
     function switchChar() {
 
-        // detect if daily reset occurs (no more frequently than every 16 hours)
-        var oldRefineToday = charStatisticsList[curCharName].general.refined | 0;
-        var newRefineToday = unsafeWindow.client.dataModel.model.ent.main.currencies.diamondsconverted | 0;
-        if (newRefineToday < oldRefineToday) {
-			if (accountSettings.generalSettings.SCADailyReset < Date.now() - 16*60*60*1000) {
-				accountSettings.generalSettings.SCADailyReset = Date.now();
-				GM_setValue("settings__account__" + loggedAccount, JSON.stringify(accountSettings));
-			}
-		}
-
         if (getSetting('generalSettings', 'refineAD')) {
             var _currencies = unsafeWindow.client.dataModel.model.ent.main.currencies;
             if (_currencies.diamondsconvertleft && _currencies.roughdiamonds) {
@@ -3037,8 +2209,18 @@ function _select_Gateway() { // Check for Gateway used to
         nowdate = nowdate.getTime();
         
         var not_active = 0;
+		var curdiamonds = zexdiamonds;
+        var curgold = 0;
         charNamesList.every( function (charName, idx) {
-            if (!charSettingsList[charName].general.active) {
+            if (chardiamonds[idx] != null) {
+                curdiamonds += Math.floor(chardiamonds[idx] / 50) * 50;
+            }
+
+            if (chargold[idx] != null) {
+                curgold += chargold[idx];
+            }
+			
+			if (!charSettingsList[charName].general.active) {
                 not_active++;
                 return true;
             }
@@ -3053,7 +2235,8 @@ function _select_Gateway() { // Check for Gateway used to
                     }
                 }
                 return true;
-            } 
+            }
+			
             
             curCharNum = idx;
             chardelay = delay.SHORT;
@@ -3072,7 +2255,7 @@ function _select_Gateway() { // Check for Gateway used to
                 window.setTimeout(cancelZexOffer, delay.SHORT);
             }
         }
-
+/*
         // Count AD & Gold
         var curdiamonds = zexdiamonds;
         var curgold = 0;
@@ -3085,7 +2268,7 @@ function _select_Gateway() { // Check for Gateway used to
                 curgold += chargold[idx];
             }
         });
-
+*/
         console.log("Next run for " + curCharName + " in " + parseInt(chardelay / 1000) + " seconds.");
         $("#prinfopane").empty();
         var ptext = $("<h3 class='promo-image copy-top prh3'>Professions Robot<br />Next task for " + curCharName + "<br /><span data-timer='" + chardate + "' data-timer-length='2'></span><br />Diamonds: " + curdiamonds.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br />Gold: " + curgold + "</h3>")
@@ -3098,22 +2281,6 @@ function _select_Gateway() { // Check for Gateway used to
         
         GM_setValue("curCharNum_" + loggedAccount, curCharNum);
 
-
-        var runSCAtime = !charStatisticsList[charNamesList[lastCharNum]].general.lastSCAVisit 
-                      || ((charStatisticsList[charNamesList[lastCharNum]].general.lastSCAVisit + (1000*60*60*24)) < Date.now())
-                      || (charStatisticsList[charNamesList[lastCharNum]].general.lastSCAVisit < accountSettings.generalSettings.SCADailyReset)
-                      || (charStatisticsList[charNamesList[lastCharNum]].general.lastSCAVisit < lastDailyResetTime.getTime());
-       
-        var sca_setting = getSetting('generalSettings','runSCA'); 
-        var runSCA = (runSCAtime && (sca_setting !== 'never'));
-        runSCA = runSCA && (sca_setting === 'always' || (sca_setting === 'free' && chardelay > 7000)); // More than 7 seconds for the next char swap
-        console.log("Check if need to run SCA for " + charNamesList[lastCharNum] + ":  " + sca_setting + " " + runSCAtime);                
-        
-        if (runSCA) {
-            unsafeWindow.location.hash = unsafeWindow.location.hash.replace(/\)\/.+/, ')' + "/adventures");
-            processCharSCA(lastCharNum);
-            return;
-        }
         dfdNextRun.resolve(chardelay);
     }
     /**
@@ -3329,10 +2496,7 @@ function _select_Gateway() { // Check for Gateway used to
                 
                 // Adding the Account and character settings / info to the UI
                 addSettings();
-                //updateCounters(false); // updating the UI from saved list
-                //if (JSON.stringify(accountSettings) !== GM_getValue("account_settings_" + accountName)) GM_setValue("account_settings_" + accountName, JSON.stringify(accountSettings));
-                //if (JSON.stringify(charSettingsTest) !== GM_getValue("chars_settings_" + accountName)) GM_setValue("chars_settings_" + accountName, JSON.stringify(charSettingsTest));                
-            }
+			}
 
             // load current character position and values
             curCharNum = GM_getValue("curCharNum_" + accountName, 0);
@@ -4209,6 +3373,15 @@ function _select_Gateway() { // Check for Gateway used to
                 pattern: /^T3_Runestone/,
                 limit: 0
             };
+			_vendorItems[_vendorItems.length] = {
+                pattern: /^T4_Enchantment/,
+                limit: 0
+            };
+            _vendorItems[_vendorItems.length] = {
+                pattern: /^T4_Runestone/,
+                limit: 0
+            };
+			
         }
         if (getSetting('vendorSettings', 'vendorPots1')) {
             _vendorItems[_vendorItems.length] = {
