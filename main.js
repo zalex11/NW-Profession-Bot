@@ -1563,57 +1563,15 @@ function _select_Gateway() { // Check for Gateway used to
             emptyBagSlots: 0,
             activeSlots: 0,
         },
-        professions: {
-            // Names must match unsafeWindow.client.dataModel.model.ent.main.itemassignmentcategories.categories.displayname
-            "Leadership": { level: 0, workersUsed: [], workersUnused: [] },
-            "Alchemy": { level: 0, workersUsed: [], workersUnused: [] },
-            "Jewelcrafting": { level: 0, workersUsed: [], workersUnused: [] },
-            "Weaponsmithing": { level: 0,workersUsed: [], workersUnused: [] },
-            "Artificing": { level: 0, workersUsed: [], workersUnused: [] },
-            "Mailsmithing": { level: 0, workersUsed: [], workersUnused: []},
-            "Platesmithing": { level: 0, workersUsed: [], workersUnused: [] },
-            "Leatherworking": { level: 0, workersUsed: [], workersUnused: [] },
-            "Tailoring": { level: 0, workersUsed: [], workersUnused: [] },
-            "Black Ice Shaping": { level: 0, workersUsed: [], workersUnused: [] },
-            /*
-            "Winter Event":     { level: 0, workersUsed: [], workersUnused: [] },
-            "Siege Event":      { level: 0, workersUsed: [], workersUnused: [] },
-            */
-        },
-        tools: {
-            "Awl":{used:[],unused:[]},
-            "Shears":{used:[],unused:[]},
-            "Hammer":{used:[],unused:[]},
-            "Needle":{used:[],unused:[]},
-            "Bellows":{used:[],unused:[]},
-            "Bezelpusher":{used:[],unused:[]},
-            "Mortar":{used:[],unused:[]},
-            "Anvil":{used:[],unused:[]},
-            "Grindstone":{used:[],unused:[]},
-            "Philosophersstone":{used:[],unused:[]},
-            "Loupe":{used:[],unused:[]},
-            "Graver":{used:[],unused:[]},
-            "Crucible":{used:[],unused:[]},
-            "Tongs":{used:[],unused:[]},
-        },
         trackedResources: [],
-        slotUse: [],
     };
 
     /*  For searching unsafeWindow.client.dataModel.model.ent.main.inventory.assignedslots / unsafeWindow.client.dataModel.model.ent.main.inventory.notassignedslots  
     This needs some design change. */
 
     // The definitions themselves are at the bottom of the script
-    var workerList = workerDefinition();
-    var toolList = toolListDefinition();
 
     var trackResources = [{
-        fname: 'Aqua Regia',
-        name: 'Crafting_Resource_Aquaregia'
-    }, {
-        fname: 'Aqua Vitae',
-        name: 'Crafting_Resource_Aquavitae'
-    }, {
         fname: 'Residuum',
         name: 'Crafting_Resource_Residuum'
     }, {
@@ -1775,7 +1733,8 @@ function _select_Gateway() { // Check for Gateway used to
         defaultCharSettings.taskListSettings[task.taskListName].taskProfile = profileNames[0].value;
         defaultCharSettings.taskListSettings[task.taskListName].taskPriority = task.taskDefaultPriority;
     });
-
+	
+	//problems if tasklist had no "active" profiles
     for (var i = 0; i < 9; i++) {
         defaultCharSettings.taskListSettingsManual[i] = {};
         defaultCharSettings.taskListSettingsManual[i].Profession = tasklist[0].taskListName;
@@ -3044,16 +3003,7 @@ function _select_Gateway() { // Check for Gateway used to
 
         //clearing
         charStatisticsList[curCharName].trackedResources = [];
-        $.each(charStatisticsList[curCharName].tools, function(name, obj) {
-            obj.used = [];
-            obj.unused = [];
-        });
-        $.each(charStatisticsList[curCharName].professions, function(name, obj) {
-            obj.workersUsed = [];
-            obj.workersUnused = [];
-            obj.level = 0;
-        });
-
+        
         trackResources.forEach(function(resource, ri) {
             charStatisticsList[curCharName].trackedResources[ri] = 0;
         });
@@ -3071,53 +3021,6 @@ function _select_Gateway() { // Check for Gateway used to
                         }
                     });
                 });
-            });
-
-        // Slot assignment
-        unsafeWindow.client.dataModel.model.ent.main.itemassignments.assignments.forEach(function(slot, ix) {
-            charStatisticsList[curCharName].slotUse[ix] = slot.category;
-        });
-
-        // Workers and tools assignment and qty
-        unsafeWindow.client.dataModel.model.ent.main.inventory.assignedslots
-            .forEach(function(item) {
-                $.each(workerList, function(pName, pList) {
-                    var index = pList.indexOf(item.name);
-                    if (index > -1) {
-                        charStatisticsList[curCharName].professions[pName].workersUsed[index] = item.count;
-                    }
-                });
-                $.each(toolList, function(tName, tList) {
-                    var index = tList.indexOf(item.name);
-                    if (index > -1) {
-                        charStatisticsList[curCharName].tools[tName].used[index] = item.count;
-                    }
-                });
-            });
-
-        unsafeWindow.client.dataModel.model.ent.main.inventory.notassignedslots
-            .forEach(function(item) {
-                $.each(workerList, function(pName, pList) {
-                    var index = pList.indexOf(item.name);
-                    if (index > -1) {
-                        charStatisticsList[curCharName].professions[pName].workersUnused[index] = item.count;
-                    }
-                })
-                $.each(toolList, function(tName, tList) {
-                    var index = tList.indexOf(item.name);
-                    if (index > -1) {
-                        charStatisticsList[curCharName].tools[tName].unused[index] = item.count;
-                    }
-                })
-            });
-
-        // getting profession levels from currentrank, model has displayname, name, and category, using displayname (platesmithing)
-        // Must match the names in charStatisticsList[curCharName].professions
-        unsafeWindow.client.dataModel.model.ent.main.itemassignmentcategories.categories
-            .forEach(function(prof) {
-                if (charStatisticsList[curCharName].professions[prof.displayname]) {
-                    charStatisticsList[curCharName].professions[prof.displayname].level = prof.currentrank;
-                }
             });
 
         charStatisticsList[curCharName].general.nextTask = chartimers[curCharNum];
@@ -3747,7 +3650,7 @@ function _select_Gateway() { // Check for Gateway used to
 
             var tabs = {
                 main: tr('tab.general'),
-                prof: tr('tab.professions'),
+                
                 vend: tr('tab.vendor'),
                 bank: tr('tab.consolidation')
             };
@@ -3766,20 +3669,9 @@ function _select_Gateway() { // Check for Gateway used to
             temp_tab = addTab("#info_tabs", tr('tab.visits'));
             temp_tab.append("<div id='sca_v'></div>");
             
-            temp_tab = addTab("#info_tabs", tr('tab.workers'));
-            temp_tab.append("<div id='worker_overview'></div>");
-            
-            temp_tab = addTab("#info_tabs", tr('tab.tools'));
-            temp_tab.append("<div id='tools_overview'></div>");
-            
             temp_tab = addTab("#info_tabs", tr('tab.resources'));
             temp_tab.append("<div id='resource_tracker'></div>");
             
-            temp_tab = addTab("#info_tabs", tr('tab.levels'));
-            temp_tab.append("<div id='profession_levels'></div>");
-            
-            temp_tab = addTab("#info_tabs", tr('tab.slots'));
-            temp_tab.append("<div id='slot_tracker'></div>");
             $("#info_tabs").tabs({ active: false, collapsible: true });                
 
             
@@ -4203,93 +4095,6 @@ function _select_Gateway() { // Check for Gateway used to
             updateCounters(true);
         });
 
-        // Worker tab update.
-        html = '<table class="professionRanks">';
-        var temp = "";
-        html += "<tr><th>Char name</th>";
-        var options = "";
-        var workerTabSelects = ["Leadership", "Alchemy", "Leadership"];
-        $.each(charStatisticsList[charNamesList[0]].professions, function(profession) {
-            options += "<option value='" + profession + "'>" + profession + "</option>";
-        })
-
-        for (var i = 0; i < 3; i++) {
-            //saving current select values
-            if ($('#setting__worker__tab__p' + i).val()) workerTabSelects[i] = $('#setting__worker__tab__p' + i).val();
-            html += "<th colspan=6>" + "<select name='setting__worker__tab__p" + i + "' id='setting__worker__tab__p" + i + "'>" + options + "</select></th>";
-            temp += "<th>p</th><th>b</th><th>g</th><th>t3</th><th>t2</th><th>t1</th>";
-        }
-        html += "</tr><tr><th></th>" + temp + "</tr>";
-        charNamesList.forEach(function(charName) {
-            temp = "";
-            html += "<tr><td rowspan=2>" + charName + "</td>";
-            for (var i = 0; i < 3; i++) {
-                var list = charStatisticsList[charName].professions[workerTabSelects[i]];
-                for (var ix = 0; ix < 6; ix++) {
-                    html += "<td class='ranked'>" + $.trim(list.workersUsed[ix]) + "</td>";
-                    temp += "<td class='ranked2'>" + $.trim(list.workersUnused[ix]) + "</td>";
-                };
-            }
-            /*
-            $.each(charStatisticsList[charName].workers, function (pf, list) {
-                for (var ix = 0; ix < 6; ix++)  {
-                    html += "<td class='ranked'>" + $.trim(list.used[ix]) + "</td>";
-                    temp += "<td class='ranked2'>" + $.trim(list.unused[ix]) + "</td>";
-                };
-            })
-            */
-            html += "</tr><tr>" + temp + "</tr>";
-        })
-
-        html += "</table>";
-        $('#worker_overview').html(html);
-        for (var i = 0; i < 3; i++) {
-            $('#setting__worker__tab__p' + i).val(workerTabSelects[i]);
-            $('#setting__worker__tab__p' + i).change(function() {
-                updateCounters(false);
-            });
-        }
-
-        // Tools tab update.
-        html = '<table class="professionRanks">';
-        var temp = "";
-        html += "<tr><th>Char name</th>";
-        var options = "";
-        var toolsTabSelects = ["Crucible", "Mortar", "Philosophersstone", "Graver"];
-        $.each(charStatisticsList[charNamesList[0]].tools, function(tool) {
-            options += "<option value='" + tool + "'>" + tool + "</option>";
-        });
-
-        for (var i = 0; i < 4; i++) {
-            //saving current select values
-            if ($('#setting__tools__tab__p' + i).val()) toolsTabSelects[i] = $('#setting__tools__tab__p' + i).val();
-            html += "<th colspan=4>" + "<select name='setting__tools__tab__p" + i + "' id='setting__tools__tab__p" + i + "'>" + options + "</select></th>";
-            temp += "<th>p</th><th>b</th><th>g</th><th>w</th>";
-        }
-        html += "</tr><tr><th></th>" + temp + "</tr>";
-        charNamesList.forEach(function(charName) {
-            temp = "";
-            html += "<tr><td rowspan=2>" + charName + "</td>";
-            for (var i = 0; i < 4; i++) {
-                var list = charStatisticsList[charName].tools[toolsTabSelects[i]];
-                for (var ix = 0; ix < 4; ix++) {
-                    html += "<td class='tranked'>" + $.trim(list.used[ix]) + "</td>";
-                    temp += "<td class='tranked2'>" + $.trim(list.unused[ix]) + "</td>";
-                };
-            }
-            html += "</tr><tr>" + temp + "</tr>";
-        })
-
-        html += "</table>";
-        $('#tools_overview').html(html);
-        for (var i = 0; i < 4; i++) {
-            $('#setting__tools__tab__p' + i).val(toolsTabSelects[i]);
-            $('#setting__tools__tab__p' + i).change(function() {
-                updateCounters(false);
-            });
-        }
-
-
         // Resource tracker update.
         html = '<table><tr><th>Character Name</th>';
         trackResources.forEach(function(item) {
@@ -4306,47 +4111,6 @@ function _select_Gateway() { // Check for Gateway used to
         html += "</table>";
         $('#resource_tracker').html(html);
 
-
-        // 'profession_levels' tab
-        html = '<table class="professionLevels">';
-        html += "<tr><th class='rotate'><div><span>Character Name</div></span></th>";
-        html += "<th class='rotate'><div><span>#slots</div></span></th>";
-        $.each(charStatisticsList[charNamesList[0]].professions, function(profession) {
-            html += "<th class='rotate'><div><span>" + profession + "</div></span></th>";
-        });
-        html += "</tr>";
-        charNamesList.forEach(function(charName) {
-            html += "<tr>";
-            html += "<td>" + charName + "</td>";
-            html += "<td>" + charStatisticsList[charName].general.activeSlots + "</td>";
-            $.each(charStatisticsList[charName].professions, function(name, profData) {
-                html += "<td>" + profData.level + "</td>";
-            });
-            html += "</tr>";
-        });
-        html += "</table>";
-        $('#profession_levels').html(html);
-
-        // 'slot_tracker' tab
-        html = '<table>';
-        html += "<tr><th>Character Name</th>";
-        for (var i = 0; i < 9; i++) {
-            html += "<th> #" + (i + 1) + " </th>";
-        }
-        html += "</tr>";
-
-        charNamesList.forEach(function(charName) {
-            html += "<tr>";
-            html += "<td>" + charName + "</td>";
-            for (var i = 0; i < 9; i++) {
-                html += "<td>" + $.trim(charStatisticsList[charName].slotUse[i]).substring(0, 3) + " </td>";
-            }
-            html += "</tr>";
-        });
-        html += "</table>";
-        $('#slot_tracker').html(html);
-        
-        
         // Visit times and SCA tab
         html = '<table>';
         html += "<tr><th>Character Name</th><th>Next Profession</th><th>Last SCA</th>";
@@ -4540,11 +4304,7 @@ function _select_Gateway() { // Check for Gateway used to
                 'tab.other': 'Other',
                 'tab.counters': 'Refine Counters',
                 'tab.visits': 'SCA & Visits',
-                'tab.workers': 'Workers',
-                'tab.tools': 'Tools',
                 'tab.resources': 'Resource Tracker',
-                'tab.levels': 'Prof levels',
-                'tab.slots': 'Slots',
                 'static.settings': 'Settings',
                 'button.save&apply': 'Save and Apply',
                 'button.close': 'Close',
@@ -4585,11 +4345,7 @@ function _select_Gateway() { // Check for Gateway used to
                 'tab.other': 'Pozostałe',
                 'tab.counters': 'Liczniki szlifowania',
                 'tab.visits': 'Nast.zadanie i SCA',
-                'tab.workers': 'Pracownicy',
-                'tab.tools': 'Narzędzia',
                 'tab.resources': 'Surowce',
-                'tab.levels': 'Poziomy prof.',
-                'tab.slots': 'Sloty',
                 'static.settings': 'Ustawienia',
                 'button.save&apply': 'Zapisz i zastosuj',
                 'button.close': 'Zamknij',
