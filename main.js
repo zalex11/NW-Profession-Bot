@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name Neverwinter gateway - Personal Fork
+// @name Neverwinter gateway - Professions Robot
 // @description Automatically selects professions for empty slots
 // @namespace https://greasyfork.org/scripts/9812-neverwinter-gateway-professions-robot/
 // @include http://gateway*.playneverwinter.com/*
@@ -11,7 +11,7 @@
 // @originalAuthor Mustex/Bunta
 // @modifiedBy NW gateway Professions Bot Developers & Contributors
 
-// @version 3.5
+// @version 4.0
 // @license http://creativecommons.org/licenses/by-nc-sa/3.0/us/
 // @grant GM_getValue
 // @grant GM_setValue
@@ -37,7 +37,8 @@ Developers & Contributors
 - WloBeb
 
 RELEASE NOTES
-3.5
+4.0
+- Per slot task & profile allocation tab (functional)
 - Settings are saved per account / char.
 - Settings are saved via event - should fix the freeze (save button removed).
 - Chars always loaded from the model.
@@ -62,8 +63,9 @@ http://rawgit.com/Phr33d0m/NW-Profession-Bot/master/Changelog.txt
 
 // Make sure it's running on the main page, no frames
 
-var scriptVersion = 3.5;
+var scriptVersion = 4.0;
 var forceSettingsResetOnUpgrade = true;
+var forceResetOnVerBelow = 3.5;
 
 if(window.self !== window.top) {
     throw "";
@@ -290,9 +292,9 @@ function _select_Gateway() { // Check for Gateway used to
 
 
     // Forcing settings clear !
-    var ver = GM_getValue("script_version", 0);
+    var ver = parseFloat(GM_getValue("script_version", 0));
     
-    if ((ver < scriptVersion) && forceSettingsResetOnUpgrade) {
+    if ((ver < forceResetOnVerBelow) && forceSettingsResetOnUpgrade) {
         var str = "Detected an upgrade from old version or fresh install.<br />Procceding will wipe all saved settings.<br />Please set characters to active after log in.";  
         $('<div id="dialog-confirm" title="Setting wipe confirm">' + str + '</div>').dialog({
               resizable: true,
@@ -443,46 +445,41 @@ function _select_Gateway() { // Check for Gateway used to
                 6: ["Leadership_Tier1_4_Protect", "Leadership_Tier1_5_Explore", "Leadership_Tier1_2_Guardduty"],
                 7: ["Leadership_Tier1_4_Protect", "Leadership_Tier1_5_Explore", "Leadership_Tier1_2_Guardduty"],
                 8: ["Leadership_Tier1_4_Protect", "Leadership_Tier1_5_Explore", "Leadership_Tier1_2_Guardduty"],
-                9: ["Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect"],
-                10: ["Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier1_2_Guardduty"],
-                11: ["Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier1_2_Guardduty"],
-                12: ["Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier1_2_Guardduty"],
-                13: ["Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier2_7_Training"],
-                14: ["Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier2_7_Training"],
-                15: ["Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier2_7_Training"],
-                16: ["Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier2_7_Training"],
-                17: ["Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier2_7_Training"],
-                18: ["Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier2_7_Training"],
-                19: ["Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier2_7_Training"],
+                9: ["Leadership_Tier1_4_Protect", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                // Begin prioritizing "Battle Undead"
+                10: ["Leadership_Tier2_10_Battle", "Leadership_Tier1_4_Protect", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                11: ["Leadership_Tier2_10_Battle", "Leadership_Tier1_4_Protect", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                12: ["Leadership_Tier2_10_Battle", "Leadership_Tier1_4_Protect", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                // Add "protect diamonds rare" and the patrol quest as a backup
+                13: ["Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier2_10_Battle", "Leadership_Tier1_4_Protect", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                14: ["Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier2_10_Battle", "Leadership_Tier1_4_Protect", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                15: ["Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier2_10_Battle", "Leadership_Tier1_4_Protect", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                // AD Production mode: Spellplague + Battle Undead
+                16: ["Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                17: ["Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier3_17_Deliver", "Leadership_Tier2_12_Taxes", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                18: ["Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier3_17_Deliver", "Leadership_Tier2_12_Taxes", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
+                19: ["Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier3_17_Deliver", "Leadership_Tier2_12_Taxes", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"],
                 // 20
 
-                20: ["Leadership_Tier3_13r_Protectdiamonds","Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore", "Leadership_Tier1_4_Protect", "Leadership_Tier2_7_Training"],
-                
-                21: ["Leadership_Tier3_13r_Protectdiamonds","Leadership_Tier4_21_Training", "Leadership_Tier4_21_Protectmagic", "Leadership_Tier3_20_Destroy", "Leadership_Tier3_13_Patrol"
+                20: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_20_Destroy", "Leadership_Tier2_12_Taxes",
+                    "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
                 ],
-                22: ["Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier4_21_Training", "Leadership_Tier4_22_Guardclerics", 
-                     "Leadership_Tier4_21_Protectmagic", "Leadership_Tier3_20_Destroy", "Leadership_Tier3_13_Patrol"
+                21: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_20_Destroy", "Leadership_Tier2_12_Taxes",
+                    "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
                 ],
-                23: ["Leadership_Tier3_13r_Protectdiamonds","Leadership_Tier4_23_Guardnoble", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier4_21_Training", 
-                     "Leadership_Tier4_22_Guardclerics", "Leadership_Tier4_21_Protectmagic", "Leadership_Tier3_20_Destroy", 
-                     "Leadership_Tier3_13_Patrol"
+                22: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_20_Destroy",
+                    "Leadership_Tier2_12_Taxes", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
                 ],
-                24: ["Leadership_Tier3_13r_Protectdiamonds","Leadership_Tier4_23_Guardnoble", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier4_21_Training", 
-                     "Leadership_Tier4_22_Guardclerics", "Leadership_Tier4_21_Protectmagic", "Leadership_Tier3_20_Destroy", 
-                     "Leadership_Tier3_13_Patrol" 
+                23: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_20_Destroy",
+                    "Leadership_Tier2_12_Taxes", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
                 ],
-                25: ["Leadership_Tier4_25r_Huntexperiment",  "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier3_13r_Protectdiamonds",
-                    "Leadership_Tier2_12_Taxes", "Leadership_Tier4_24r_Killdragon", "Leadership_Tier4_25_Battleelementalcultists",
-                     "Leadership_Tier3_20_Destroy",  "Leadership_Tier3_16_Fight", 
-                ]
-                //r hunt 166 + artifact
-                //r capture 125
-                //r protect 114
-                //i collect 100
-                //destroy 100 + chest
-                //r kill 83 + res bag
-                //battle 83 + coffer 
-                //fight 66  
+                24: ["Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier3_13r_Protectdiamonds", "Leadership_Tier3_20_Destroy",
+                    "Leadership_Tier2_12_Taxes", "Leadership_Tier4_24r_Killdragon", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle", "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
+                ],
+                25: ["Leadership_Tier4_25r_Huntexperiment", "Leadership_Tier3_20r_Master2", "Leadership_Tier3_20r_Master1", "Leadership_Tier3_20r_Master3", "Leadership_Tier4_22r_Capturebandithq", "Leadership_Tier3_13r_Protectdiamonds",
+                    "Leadership_Tier3_20_Destroy", "Leadership_Tier2_12_Taxes", "Leadership_Tier4_24r_Killdragon", "Leadership_Tier4_25_Battleelementalcultists", "Leadership_Tier3_16_Fight", "Leadership_Tier2_10_Battle",
+                    "Leadership_Tier3_13_Patrol", "Leadership_Tier2_9_Chart", "Leadership_Tier1_5_Explore"
+                ],
             },
         }, {
             profileName: "XP",
@@ -565,7 +562,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Leadership", {
         profileName: "Assets",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             3: ["Leadership_Tier3_13_Recruit", "Leadership_Tier2_7_Recruit", "Leadership_Tier1_2_Recruit"],
         }
@@ -690,7 +687,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Jewelcrafting", {
         profileName : "mass refining",
-        isProfileActive : false,
+        isProfileActive : true,
         useMassTask : true,
         level : {
             0: ["Jewelcrafting_Tier0_Intro"],
@@ -703,7 +700,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Jewelcrafting", {
         profileName: "21->25 gather",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             21: ["Jewelcrafting_Tier4_Refine_Basic_Mass", "Jewelcrafting_Tier4_Gather_Basic"],
         },
@@ -712,7 +709,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Jewelcrafting", {
         profileName: "Craft Purple Neck",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             // we care only about neck items that we can start pile up at lvl 16
             16: ["Jewelcrafting_Tier3_Neck_Offense_3", "Jewelcrafting_Tier3_Refine_Basic", "Jewelcrafting_Tier3_Gather_Basic", "Jewelcrafting_Tier2_Gather_Basic", "Jewelcrafting_Tier1_Gather_Basic"],
@@ -729,7 +726,7 @@ function _select_Gateway() { // Check for Gateway used to
     
     addProfile("Jewelcrafting", {
         profileName: "Craft Purple Rings",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             // we care only about neck items that we can start pile up at lvl 15
             15: ["Jewelcrafting_Tier3_Ring_Offense_3", "Jewelcrafting_Tier3_Refine_Basic", "Jewelcrafting_Tier3_Gather_Basic", "Jewelcrafting_Tier2_Gather_Basic", "Jewelcrafting_Tier1_Gather_Basic"],
@@ -747,7 +744,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Jewelcrafting", {
         profileName: "Craft Purple lvl 25",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Jewelcrafting_Tier4_Ring_Offense_4_Purple", //Exquisite Adamant Ring of Piercing
                 "Jewelcrafting_Tier4_Ring_Misc_4_Purple", //Exquisite Adamant Ring of Recovery
@@ -805,7 +802,7 @@ function _select_Gateway() { // Check for Gateway used to
     
     addProfile("Mailsmithing", {
         profileName : "mass refining",
-        isProfileActive : false,
+        isProfileActive : true,
         useMassTask : true,
         level : {
             0: ["Med_Armorsmithing_Tier0_Intro"],
@@ -818,7 +815,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "21->25 gather",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             21: ["Crafted_Med_Armorsmithing_T4_Refine_Basic_Mass", "Crafted_Med_Armorsmithing_T4_Gather_Basic_Mass"],
             25: ["Crafted_Med_Armorsmithing_T4_Refine_Basic", "Crafted_Med_Armorsmithing_T4_Gather_Basic"],
@@ -828,7 +825,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Berserker's Chausses and rares",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
                 "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
@@ -850,7 +847,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Soldier's Chausses and rares",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
                 "Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
@@ -871,7 +868,7 @@ function _select_Gateway() { // Check for Gateway used to
     
     addProfile("Mailsmithing", {
         profileName: "Soldier's Chainmail and rares",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Dps", //Soldier's Exquisite Elemental Chainmail
                 "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Soldier's Exquisite Elemental Chausses
@@ -892,7 +889,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Berserker's Chainmail and rares",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Scale_T4_Purple_Shirt_Tank", //Berserker's Exquisite Elemental Chainmail
                 "Crafted_Med_Armorsmithing_Scale_T4_Purple_Pants_Dps", //Berserker's Exquisite Elemental Chausses
@@ -913,7 +910,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Zealot's Chausses and rares",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
@@ -935,7 +932,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Zealot's Chainmail and rares",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Dps", //Zealot's Exquisite Elemental Chainmail
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Dps", //Zealot's Exquisite Elemental Chausses 
@@ -957,7 +954,7 @@ function _select_Gateway() { // Check for Gateway used to
    
     addProfile("Mailsmithing", {
         profileName: "Prelate's Chainmail and rares",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
@@ -979,7 +976,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "Prelate's Chausses and rares",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
@@ -1001,7 +998,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Mailsmithing", {
         profileName: "craft rares only",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             25: ["Crafted_Med_Armorsmithing_Chain_T4_Purple_Pants_Tank", //Prelate's Exquisite Elemental Chausses 
                 "Crafted_Med_Armorsmithing_Chain_T4_Purple_Shirt_Tank", //Prelate's Exquisite Elemental Chainmail                      
@@ -1069,7 +1066,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Platesmithing", {
         profileName : "mass refining",
-        isProfileActive : false,
+        isProfileActive : true,
         useMassTask : true,
         level : {
             0: ["Hvy_Armorsmithing_Tier0_Intro"],
@@ -1082,7 +1079,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Platesmithing", {
         profileName: "21->25 gather",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             21: ["Crafted_Hvy_Armorsmithing_T4_Refine_Basic_Mass", "Crafted_Hvy_Armorsmithing_T4_Gather_Basic_Mass"],
         },
@@ -1140,7 +1137,7 @@ function _select_Gateway() { // Check for Gateway used to
     
     addProfile("Leatherworking", {
         profileName : "mass refining",
-        isProfileActive : false,
+        isProfileActive : true,
         useMassTask : true,
         level : {
             0: ["Leatherworking_Tier0_Intro_1"],
@@ -1153,7 +1150,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Leatherworking", {
         profileName: "20->25 gather",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             20: ["Leatherworking_Tier3_Leather_Pants"],
             21: ["Leatherworking_Tier4_Refine_Basic_Mass", "Leatherworking_Tier4_Gather_Basic"],
@@ -1281,7 +1278,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Tailoring", {
         profileName : "mass refining",
-        isProfileActive : false,
+        isProfileActive : true,
         useMassTask : true,
         level : {
             0: ["Tailoring_Tier0_Intro"],
@@ -1294,7 +1291,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Tailoring", {
         profileName: "21->25 gather",
-        isProfileActive: false,
+        isProfileActive: true,
         level: {
             21: ["Crafted_Tailoring_T4_Refine_Basic_Mass", "Crafted_Tailoring_T4_Gather_Basic_Mass"],
             25: ["Crafted_Tailoring_T4_Refine_Basic", "Crafted_Tailoring_T4_Gather_Basic"],
@@ -1354,7 +1351,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Artificing", {
         profileName : "mass refining",
-        isProfileActive : false,
+        isProfileActive : true,
         useMassTask : true,
         level : {
             0: ["Artificing_Tier0_Intro_1"],
@@ -1418,7 +1415,7 @@ function _select_Gateway() { // Check for Gateway used to
 
     addProfile("Weaponsmithing", {
         profileName : "mass refining",
-        isProfileActive : false,
+        isProfileActive : true,
         useMassTask : true,
         level : {
             0: ["Weaponsmithing_Tier0_Intro"],
@@ -1523,14 +1520,14 @@ function _select_Gateway() { // Check for Gateway used to
     // Profession priority list by order
     var tasklist = [
         definedTask["Leadership"],
-		definedTask["Artificing"],
-		definedTask["Tailoring"],
         definedTask["Jewelcrafting"],
         definedTask["Alchemy"],
         definedTask["Weaponsmithing"],
+        definedTask["Artificing"],
         definedTask["Mailsmithing"],
         definedTask["Platesmithing"],
         definedTask["Leatherworking"],
+        definedTask["Tailoring"],
         definedTask["Black Ice Shaping"],
         definedTask["Winter Event"],
         definedTask["Siege Event"],
@@ -1550,6 +1547,7 @@ function _select_Gateway() { // Check for Gateway used to
     var defaultCharStatistics = {
         general: {
             nextTask: null,
+            lastVisit: null,
             lastSCAVisit: null,
             refineCounter: 0,
             refineCounterReset: Date.now(),
@@ -1563,15 +1561,57 @@ function _select_Gateway() { // Check for Gateway used to
             emptyBagSlots: 0,
             activeSlots: 0,
         },
+        professions: {
+            // Names must match unsafeWindow.client.dataModel.model.ent.main.itemassignmentcategories.categories.displayname
+            "Leadership": { level: 0, workersUsed: [], workersUnused: [] },
+            "Alchemy": { level: 0, workersUsed: [], workersUnused: [] },
+            "Jewelcrafting": { level: 0, workersUsed: [], workersUnused: [] },
+            "Weaponsmithing": { level: 0,workersUsed: [], workersUnused: [] },
+            "Artificing": { level: 0, workersUsed: [], workersUnused: [] },
+            "Mailsmithing": { level: 0, workersUsed: [], workersUnused: []},
+            "Platesmithing": { level: 0, workersUsed: [], workersUnused: [] },
+            "Leatherworking": { level: 0, workersUsed: [], workersUnused: [] },
+            "Tailoring": { level: 0, workersUsed: [], workersUnused: [] },
+            "Black Ice Shaping": { level: 0, workersUsed: [], workersUnused: [] },
+            /*
+            "Winter Event":     { level: 0, workersUsed: [], workersUnused: [] },
+            "Siege Event":      { level: 0, workersUsed: [], workersUnused: [] },
+            */
+        },
+        tools: {
+            "Awl":{used:[],unused:[]},
+            "Shears":{used:[],unused:[]},
+            "Hammer":{used:[],unused:[]},
+            "Needle":{used:[],unused:[]},
+            "Bellows":{used:[],unused:[]},
+            "Bezelpusher":{used:[],unused:[]},
+            "Mortar":{used:[],unused:[]},
+            "Anvil":{used:[],unused:[]},
+            "Grindstone":{used:[],unused:[]},
+            "Philosophersstone":{used:[],unused:[]},
+            "Loupe":{used:[],unused:[]},
+            "Graver":{used:[],unused:[]},
+            "Crucible":{used:[],unused:[]},
+            "Tongs":{used:[],unused:[]},
+        },
         trackedResources: [],
+        slotUse: [],
     };
 
     /*  For searching unsafeWindow.client.dataModel.model.ent.main.inventory.assignedslots / unsafeWindow.client.dataModel.model.ent.main.inventory.notassignedslots  
     This needs some design change. */
 
     // The definitions themselves are at the bottom of the script
+    var workerList = workerDefinition();
+    var toolList = toolListDefinition();
 
     var trackResources = [{
+        fname: 'Aqua Regia',
+        name: 'Crafting_Resource_Aquaregia'
+    }, {
+        fname: 'Aqua Vitae',
+        name: 'Crafting_Resource_Aquavitae'
+    }, {
         fname: 'Residuum',
         name: 'Crafting_Resource_Residuum'
     }, {
@@ -1629,6 +1669,8 @@ function _select_Gateway() { // Check for Gateway used to
         addProfile(cProfile.taskName, cProfile.profile, cProfile.baseProfile);
     });
     
+    unsafeWindow.console.log('DebugMode set to: ' + scriptSettings.general.scriptDebugMode);
+    console = scriptSettings.general.scriptDebugMode ? unsafeWindow.console || fouxConsole : fouxConsole;
 
     var delay_modifier = parseFloat(scriptSettings.general.scriptDelayFactor);
     delay.SHORT *= delay_modifier;      delay.MEDIUM *= delay_modifier;     delay.LONG *= delay_modifier; 
@@ -1637,40 +1679,41 @@ function _select_Gateway() { // Check for Gateway used to
 
     var defaultAccountSettings = {
         vendorSettings: {
-            vendorJunk: true,
-            vendorKitsLimit: true,
-            vendorAltarsLimit: true,
-            vendorKitsAll: true,
-            vendorAltarsAll: true,
-            vendorProfResults: true,
-            vendorPots1: true,
-            vendorPots2: true,
-            vendorPots3: true,
-            vendorPots4: true,
-            vendorPots5: true,
-            vendorEnchR1: true,
-            vendorEnchR2: true,
-            vendorEnchR3: true,
+            vendorJunk: false,
+            vendorKitsLimit: false,
+            vendorAltarsLimit: false,
+            vendorKitsAll: false,
+            vendorAltarsAll: false,
+            vendorProfResults: false,
+            vendorPots1: false,
+            vendorPots2: false,
+            vendorPots3: false,
+            vendorPots4: false,
+            vendorPots5: false,
+            vendorEnchR1: false,
+            vendorEnchR2: false,
+            vendorEnchR3: false,
         },
         professionSettings: {
-            fillOptionals: false,
+            fillOptionals: true,
             autoPurchaseRes: true,
-            trainAssets: false,
+            trainAssets: true,
             smartLeadershipAssets: true,
             skipPatrolTask: 'AD&Lvl20',
         },
         generalSettings: {
             refineAD: true,
             openRewards: false,
-            runSCA: 'never',
+            keepOneUnopened: false,
+            runSCA: 'free',
             SCADailyReset: Date.now() - 24*60*60*1000,
         },
         consolidationSettings: {
             bankCharName: "",
-            transferRate: 200,
+            transferRate: 100,
             consolidate: false,
-            minCharBalance: 1,
-            minToTransfer: 200000,
+            minCharBalance: 10000,
+            minToTransfer: 50000,
         },
     };
 
@@ -1678,7 +1721,7 @@ function _select_Gateway() { // Check for Gateway used to
     var defaultCharSettings = {
         charName: "",
         general: {
-            active: true,
+            active: false,
             overrideGlobalSettings: false,
             manualTaskSlots: false,
         },
@@ -1707,6 +1750,7 @@ function _select_Gateway() { // Check for Gateway used to
         },
         generalSettings: {
             refineAD: true,
+            keepOneUnopened: false,
             openRewards: false,
             runSCA: 'free',
         },
@@ -1733,8 +1777,7 @@ function _select_Gateway() { // Check for Gateway used to
         defaultCharSettings.taskListSettings[task.taskListName].taskProfile = profileNames[0].value;
         defaultCharSettings.taskListSettings[task.taskListName].taskPriority = task.taskDefaultPriority;
     });
-	
-	//problems if tasklist had no "active" profiles
+
     for (var i = 0; i < 9; i++) {
         defaultCharSettings.taskListSettingsManual[i] = {};
         defaultCharSettings.taskListSettingsManual[i].Profession = tasklist[0].taskListName;
@@ -1800,6 +1843,7 @@ function _select_Gateway() { // Check for Gateway used to
         {scope: 'script', group: 'general', name: 'saveCharNextTime', title: tr('settings.main.savenexttime'),   type: 'checkbox', pane: 'main', tooltip: tr('settings.main.savenexttime.tooltip')},
         
         {scope: 'account', group: 'generalSettings', name: 'openRewards', title: tr('settings.account.openrewards'),  type: 'checkbox', pane: 'main', tooltip: tr('settings.account.openrewards.tooltip')},
+        {scope: 'account', group: 'generalSettings', name: 'keepOneUnopened', title: 'Keep one reward box unopened',  type: 'checkbox', pane: 'main', tooltip: 'Used to reserve the slots for the reward boxes'},
         {scope: 'account', group: 'generalSettings', name: 'refineAD', title: tr('settings.account.refinead'),           type: 'checkbox', pane: 'main', tooltip: tr('settings.account.refinead.tooltip')},
         {scope: 'account', group: 'generalSettings', name: 'runSCA', title: tr('settings.account.runSCA'),               type: 'select',   pane: 'main', tooltip: tr('settings.account.runSCA.tooltip'),
             opts: [ { name: 'never',        value: 'never'}, 
@@ -1834,8 +1878,10 @@ function _select_Gateway() { // Check for Gateway used to
 
         {scope: 'char', group: 'general', name: 'active',     type:'checkbox',    pane: 'main_not_tab',    title: 'Active',   tooltip: 'The char will be processed by the script'},
         {scope: 'char', group: 'general', name:'overrideGlobalSettings',    type:'checkbox',    pane:'main_not_tab',    title:'Override account settings for this char',   tooltip:''},
+        {scope: 'char', group: 'general', name:'manualTaskSlots',    type:'checkbox',    pane:'main_not_tab',    title:'Use manual task allocation tab',   tooltip:'Per slot profile allocation'},
         
         {scope: 'char', group: 'generalSettings', name: 'openRewards', title: 'Open Reward Chests',  type: 'checkbox', pane: 'main', tooltip: 'Enable opeing of leadership chests on character switch' },
+        {scope: 'char', group: 'generalSettings', name: 'keepOneUnopened', title: 'Keep one reward box unopened',  type: 'checkbox', pane: 'main', tooltip: 'Used to reserve the slots for the reward boxes'},        
         {scope: 'char', group: 'generalSettings', name: 'refineAD',    title: 'Refine AD',           type: 'checkbox', pane: 'main', tooltip: 'Enable refining of AD on character switch'},
         {scope: 'char', group: 'generalSettings', name: 'runSCA',    title: 'Run SCA',               type: 'select',   pane: 'main', tooltip: 'Running SCA adventures reward after professions',
             opts: [ { name: 'never',        value: 'never'}, 
@@ -1859,6 +1905,7 @@ function _select_Gateway() { // Check for Gateway used to
         {scope: 'char', group: 'vendorSettings', name:'vendorPots2',     type:'checkbox', pane:'vend',   title:'Auto Vendor lesser potions (lvl 15)',tooltip:'Vendor all lesser potions (lvl 15) found in player bags'},
         {scope: 'char', group: 'vendorSettings', name:'vendorPots3',     type:'checkbox', pane:'vend',   title:'Auto Vendor potions (lvl 30)',       tooltip:'Vendor all potions (lvl 30) found in player bags'},
         {scope: 'char', group: 'vendorSettings', name:'vendorPots4',     type:'checkbox', pane:'vend',   title:'Auto Vendor greater potions (lvl 45)',   tooltip:'Vendor all greater potions (lvl 45) found in player bags'},
+        {scope: 'char', group: 'vendorSettings', name:'vendorPots5',     type:'checkbox', pane:'vend',   title:'Auto Vendor major potions (lvl 60)',     tooltip:'Auto Vendor major potions (lvl 60)'},        
         {scope: 'char', group: 'vendorSettings', name:'vendorEnchR1',    type:'checkbox', pane:'vend',   title:'Auto Vendor enchants & runes Rank 1',    tooltip:'Vendor all Rank 1 enchantments & runestones found in player bags'},
         {scope: 'char', group: 'vendorSettings', name:'vendorEnchR2',    type:'checkbox', pane:'vend',   title:'Auto Vendor enchants & runes Rank 2',    tooltip:'Vendor all Rank 2 enchantments & runestones found in player bags'},
         {scope: 'char', group: 'vendorSettings', name:'vendorEnchR3',    type:'checkbox', pane:'vend',   title:'Auto Vendor enchants & runes Rank 3',    tooltip:'Vendor all Rank 3 enchantments & runestones found in player bags'},
@@ -1963,32 +2010,57 @@ function _select_Gateway() { // Check for Gateway used to
 
         // Check for available slots and start new task
         console.log("Looking for empty slots.");
-        if (unsafeWindow.client.dataModel.model.ent.main.itemassignments.assignments.filter(function(entry) {
+        var slots = unsafeWindow.client.dataModel.model.ent.main.itemassignments.assignments.filter(function(entry) {
             return (!entry.islockedslot && !entry.uassignmentid);
-        }).length) {
-            // Go through the professions to assign tasks until specified slots filled
-            console.log("Prioritizing task lists.");
-            var charTaskList = tasklist
-                .filter(function(task) {
-                    return (charSettingsList[curCharName].taskListSettings[task.taskListName].taskSlots > 0);
-                })
-                .sort(function(a, b) {
-                    return (charSettingsList[curCharName].taskListSettings[a.taskListName].taskPriority - charSettingsList[curCharName].taskListSettings[b.taskListName].taskPriority);
-                });
+        });
+        if (slots.length) {
+            if (charSettingsList[curCharName].general.manualTaskSlots) {
+                var slotIndex = slots[0].slotindex;
+                var _task = tasklist.filter(function(task) {
+                    return task.taskListName === charSettingsList[curCharName].taskListSettingsManual[slotIndex].Profession;
+                })[0];
+                
+                var _profile = _task.profiles.filter(function(profile) {
+                    return profile.profileName === charSettingsList[curCharName].taskListSettingsManual[slotIndex].Profile;
+                })[0];
 
-            console.log("Attempting to fill the slot.");
-            for (var i = 0; i < charTaskList.length; i++) {
-                var currentTasks = unsafeWindow.client.dataModel.model.ent.main.itemassignments.assignments.filter(function(entry) {
-                    return entry.category == charTaskList[i].taskName;
-                });
-                if (currentTasks.length < charSettingsList[curCharName].taskListSettings[charTaskList[i].taskListName].taskSlots) {
-                    unsafeWindow.client.professionFetchTaskList('craft_' + charTaskList[i].taskName);
-                    window.setTimeout(function() {
-                        createNextTask(charTaskList[i], 0);
-                    }, delay.SHORT);
-                    return true;
-                }
+                console.log("Allocating per slot. For slot #" + slotIndex + " profession: " + _task.taskListName + " profile: " +  _profile.profileName);
+                unsafeWindow.client.professionFetchTaskList('craft_' + _task.taskName);
+                window.setTimeout(function() {
+                    createNextTask(_task, _profile, 0);
+                }, delay.SHORT);
+                return true;
             }
+            else {
+                // Go through the professions to assign tasks until specified slots filled
+                console.log("Prioritizing task lists.");
+                var charTaskList = tasklist
+                    .filter(function(task) {
+                        return (charSettingsList[curCharName].taskListSettings[task.taskListName].taskSlots > 0);
+                    })
+                    .sort(function(a, b) {
+                        return (charSettingsList[curCharName].taskListSettings[a.taskListName].taskPriority - charSettingsList[curCharName].taskListSettings[b.taskListName].taskPriority);
+                    });
+
+                console.log("Attempting to fill the slot.");
+                for (var i = 0; i < charTaskList.length; i++) {
+                    var currentTasks = unsafeWindow.client.dataModel.model.ent.main.itemassignments.assignments.filter(function(entry) {
+                        return entry.category == charTaskList[i].taskName;
+                    });
+                    if (currentTasks.length < charSettingsList[curCharName].taskListSettings[charTaskList[i].taskListName].taskSlots) {
+                        unsafeWindow.client.professionFetchTaskList('craft_' + charTaskList[i].taskName);
+                        var profile = charTaskList[i].profiles.filter(function(profile) {
+                            return profile.profileName == charSettingsList[curCharName].taskListSettings[charTaskList[i].taskListName].taskProfile;
+                        })[0];
+                        console.log('Selecting profile: ' + profile.profileName);
+
+                        window.setTimeout(function() {
+                            createNextTask(charTaskList[i], profile, 0);
+                        }, delay.SHORT);
+                        return true;
+                    }
+                }
+            };
             console.log("All task counts assigned");
         } else {
             console.log("No available task slots");
@@ -2047,7 +2119,7 @@ function _select_Gateway() { // Check for Gateway used to
             WaitForNotState(".modal-window.daily-dice").done(function() {
                 charStatisticsList[_charName].general.lastSCAVisit = Date.now();
                 GM_setValue("statistics__char__" + _fullCharName , JSON.stringify(charStatisticsList[_charName]));
-                updateCounters(false);
+                updateCounters();
 
                 //Adjusting for the time the SCA took
                 var chardelay;
@@ -2116,7 +2188,7 @@ function _select_Gateway() { // Check for Gateway used to
             WaitForNotState(".modal-window.daily-dice").done(function() {
                 charStatisticsList[charNamesList[_charIndex]].general.lastSCAVisit = Date.now();
                 GM_setValue("statistics__char__" + _fullCharName , JSON.stringify(charStatisticsList[charNamesList[_charIndex]]));
-                updateCounters(false);
+                updateCounters();
                 if (_isLastChar) {
                     window.setTimeout(function() {
                         PauseSettings("unpause");
@@ -2162,12 +2234,12 @@ function _select_Gateway() { // Check for Gateway used to
      * @param {int} i The current task number being attempted
      */
 
-    function createNextTask(prof, i) {
+    function createNextTask(prof, profile, i) {
         // TODO: Use callback function
         if (!unsafeWindow.client.dataModel.model.craftinglist || unsafeWindow.client.dataModel.model.craftinglist === null || !unsafeWindow.client.dataModel.model.craftinglist['craft_' + prof.taskName] || unsafeWindow.client.dataModel.model.craftinglist['craft_' + prof.taskName] === null) {
             console.log('Task list not loaded for:', prof.taskName);
             window.setTimeout(function() {
-                createNextTask(prof, i);
+                createNextTask(prof, profile, i);
             }, delay.SHORT);
             return false;
         }
@@ -2176,11 +2248,7 @@ function _select_Gateway() { // Check for Gateway used to
         var level = unsafeWindow.client.dataModel.model.ent.main.itemassignmentcategories.categories.filter(function(entry) {
             return entry.name == prof.taskName;
         })[0].currentrank;
-        var profiles = prof.profiles.filter(function(profile) {
-            return profile.profileName == charSettingsList[curCharName].taskListSettings[prof.taskListName].taskProfile;
-        });
-        console.log('Selecting profile: ' + profiles[0].profileName);
-        var list = profiles[0].level[level];
+        var list = profile.level[level];
         if(list.length <= i) {
             console.log("Nothing Found");
             switchChar();
@@ -2193,7 +2261,7 @@ function _select_Gateway() { // Check for Gateway used to
         console.log("Searching for task:", taskName);
 
         // Search for task to start
-        var task = searchForTask(taskName, prof.taskName, profiles[0], level);
+        var task = searchForTask(taskName, prof.taskName, profile, level);
 
         // Finish createNextTask function
         if (task === null) {
@@ -2247,14 +2315,14 @@ function _select_Gateway() { // Check for Gateway used to
                         WaitForState("").done(function() {
                             // continue with the next one
                             console.log('Finding next task');
-                            createNextTask(prof, i + 1);
+                            createNextTask(prof, profile, i + 1);
                         });
                     }
                 });
             });
         } else {
             console.log('Finding next task');
-            createNextTask(prof, i + 1);
+            createNextTask(prof, profile, i + 1);
         }
     }
     /** Count resouce in bags
@@ -2713,7 +2781,7 @@ function _select_Gateway() { // Check for Gateway used to
                 }  
                 // Domino effect: this new order will post all the gathered diamonds until now
                 var charDiamonds = parseInt(unsafeWindow.client.dataModel.model.ent.main.currencies.diamonds);
-                var ZenRate = parseInt(getSetting('consolidationSettings','transferRate'));
+                var ZenRate = parseInt(accountSettings.consolidationSettings.transferRate);
                 if (!ZenRate) return;
                 var ZenQty = Math.floor((charDiamonds + exchangeDiamonds - parseInt(getSetting('consolidationSettings','minCharBalance'))) / ZenRate);
                 ZenQty = (ZenQty > 5000) ? 5000 : ZenQty;
@@ -2960,7 +3028,9 @@ function _select_Gateway() { // Check for Gateway used to
                     console.log("Character does not have minimum AD balance to do funds transfer. Skipping Zex Posting..");
                 }
             }
-
+            else {
+                console.log("Bank char not set or bank char, skipping posting.");
+            }
         } else {
             console.log("Zen Exchange AD transfer not enabled. Skipping Zex Posting..");
         }
@@ -2974,7 +3044,9 @@ function _select_Gateway() { // Check for Gateway used to
                     if (slot && _cRewardPat.test(slot.name)) {
                         if (slot.count >= 99)
                             slot.count = 99;
-                        for (i = 1; i <= slot.count; i++) {
+                        
+                        var reserve = getSetting('generalSettings', 'keepOneUnopened') ? 1 : 0;
+                        for (i = 1; i <= (slot.count - reserve); i++) {
                             window.setTimeout(function() {
                                 client.sendCommand('GatewayInventory_OpenRewardPack', slot.uid);
                             }, 500);
@@ -2992,6 +3064,7 @@ function _select_Gateway() { // Check for Gateway used to
         // Updating statistics
         var _stat = charStatisticsList[curCharName].general;
         var _chardata = unsafeWindow.client.dataModel.model.ent.main.currencies;
+        _stat.lastVisit = Date.now();
         _stat.gold = parseInt(_chardata.gold);
         _stat.rad = parseInt(_chardata.roughdiamonds);
         _stat.diamonds = parseInt(_chardata.diamonds);
@@ -3003,7 +3076,16 @@ function _select_Gateway() { // Check for Gateway used to
 
         //clearing
         charStatisticsList[curCharName].trackedResources = [];
-        
+        $.each(charStatisticsList[curCharName].tools, function(name, obj) {
+            obj.used = [];
+            obj.unused = [];
+        });
+        $.each(charStatisticsList[curCharName].professions, function(name, obj) {
+            obj.workersUsed = [];
+            obj.workersUnused = [];
+            obj.level = 0;
+        });
+
         trackResources.forEach(function(resource, ri) {
             charStatisticsList[curCharName].trackedResources[ri] = 0;
         });
@@ -3023,9 +3105,56 @@ function _select_Gateway() { // Check for Gateway used to
                 });
             });
 
+        // Slot assignment
+        unsafeWindow.client.dataModel.model.ent.main.itemassignments.assignments.forEach(function(slot, ix) {
+            charStatisticsList[curCharName].slotUse[ix] = slot.category;
+        });
+
+        // Workers and tools assignment and qty
+        unsafeWindow.client.dataModel.model.ent.main.inventory.assignedslots
+            .forEach(function(item) {
+                $.each(workerList, function(pName, pList) {
+                    var index = pList.indexOf(item.name);
+                    if (index > -1) {
+                        charStatisticsList[curCharName].professions[pName].workersUsed[index] = item.count;
+                    }
+                });
+                $.each(toolList, function(tName, tList) {
+                    var index = tList.indexOf(item.name);
+                    if (index > -1) {
+                        charStatisticsList[curCharName].tools[tName].used[index] = item.count;
+                    }
+                });
+            });
+
+        unsafeWindow.client.dataModel.model.ent.main.inventory.notassignedslots
+            .forEach(function(item) {
+                $.each(workerList, function(pName, pList) {
+                    var index = pList.indexOf(item.name);
+                    if (index > -1) {
+                        charStatisticsList[curCharName].professions[pName].workersUnused[index] = item.count;
+                    }
+                })
+                $.each(toolList, function(tName, tList) {
+                    var index = tList.indexOf(item.name);
+                    if (index > -1) {
+                        charStatisticsList[curCharName].tools[tName].unused[index] = item.count;
+                    }
+                })
+            });
+
+        // getting profession levels from currentrank, model has displayname, name, and category, using displayname (platesmithing)
+        // Must match the names in charStatisticsList[curCharName].professions
+        unsafeWindow.client.dataModel.model.ent.main.itemassignmentcategories.categories
+            .forEach(function(prof) {
+                if (charStatisticsList[curCharName].professions[prof.displayname]) {
+                    charStatisticsList[curCharName].professions[prof.displayname].level = prof.currentrank;
+                }
+            });
+
         charStatisticsList[curCharName].general.nextTask = chartimers[curCharNum];
         GM_setValue("statistics__char__" + curCharFullName , JSON.stringify(charStatisticsList[curCharName]));
-        updateCounters(false);
+        updateCounters();
 
 
         console.log("Switching Characters");
@@ -3066,7 +3195,7 @@ function _select_Gateway() { // Check for Gateway used to
         curCharFullName = curCharName + "@" + loggedAccount;
         
 
-        if (accountSettings.consolidationSettings.consolidate) {
+        if (getSetting('consolidationSettings','consolidate')) {
             // Withdraw AD from the ZAX into the banker character
             if (accountSettings.consolidationSettings.bankCharName == curCharName) {
                 window.setTimeout(cancelZexOffer, delay.SHORT);
@@ -3329,9 +3458,6 @@ function _select_Gateway() { // Check for Gateway used to
                 
                 // Adding the Account and character settings / info to the UI
                 addSettings();
-                //updateCounters(false); // updating the UI from saved list
-                //if (JSON.stringify(accountSettings) !== GM_getValue("account_settings_" + accountName)) GM_setValue("account_settings_" + accountName, JSON.stringify(accountSettings));
-                //if (JSON.stringify(charSettingsTest) !== GM_getValue("chars_settings_" + accountName)) GM_setValue("chars_settings_" + accountName, JSON.stringify(charSettingsTest));                
             }
 
             // load current character position and values
@@ -3372,7 +3498,7 @@ function _select_Gateway() { // Check for Gateway used to
         }
 
         // MAC-NW -- AD Consolidation -- Banker Withdraw Section
-        if (accountSettings.consolidationSettings.consolidate) {
+        if (getSetting('consolidationSettings','consolidate')) {
 
             unsafeWindow.client.dataModel.fetchExchangeAccountData();
 
@@ -3440,7 +3566,7 @@ function _select_Gateway() { // Check for Gateway used to
             AddCss("\
                 #settingsButton{border-bottom: 1px solid rgb(102, 102, 102); border-right: 1px solid rgb(102, 102, 102); background: none repeat scroll 0% 0% rgb(238, 238, 238); display: block; position: fixed; overflow: auto; right: 0px; top: 0px; padding: 3px; z-index: 1000;}\
                 #pauseButton{border-bottom: 1px solid rgb(102, 102, 102); border-right: 1px solid rgb(102, 102, 102); background: none repeat scroll 0% 0% rgb(238, 238, 238); display: block; position: fixed; overflow: auto; right: 23px; top: 0px; padding: 3px; z-index: 1000;}\
-                #settingsPanel{position: fixed; overflow: auto; right: 0px; top: 0px; width: 600px;max-height:100%;font: 12px sans-serif; text-align: left; display: block; z-index: 1001;}\
+                #settingsPanel{position: fixed; overflow: auto; right: 0px; top: 0px; width: 650px;max-height:100%;font: 12px sans-serif; text-align: left; display: block; z-index: 1001;}\
                 #settings_title{font-weight: bolder; background: none repeat scroll 0% 0% rgb(204, 204, 204); border-bottom: 1px solid rgb(102, 102, 102); padding: 3px;}\
                 #settingsPanelButtonContainer {background: none repeat scroll 0% 0% rgb(204, 204, 204); border-top: 1px solid rgb(102, 102, 102);padding: 3px;text-align:center} \
                 #charPanel {width:98%;max-height:550px;overflow:auto;display:block;padding:3px;}\
@@ -3474,6 +3600,10 @@ function _select_Gateway() { // Check for Gateway used to
                 select.customProfiles { margin: 10px }\
                 textarea.customProfiles { width: 500px; height: 350px; margin: 10px 0; }\
                 .custom_profiles_delete { height: 16px; }\
+                #settingsPanel table {border-collapse: collapse; }\
+                tr.totals > td { border-top: 1px solid grey; padding-top: 3px; } \
+                .rarity_Gold {color: blue; } .rarity_Silver {color: green; } .rarity_Special {color: purple; }  \
+                #dialog-inventory { overflow-y: scroll; font: 10px Arial; } #dialog-inventory table { width: 100% } #dialog-inventory table th { text-align: left; font-weight: bold; }\
                 ");
             
 
@@ -3532,7 +3662,10 @@ function _select_Gateway() { // Check for Gateway used to
             addInputsUL(tab, 'script', 'main');
             
             tab = addTab("#script_settings", "Advanced");
-            tab.html("<button id='reset_settings_btn'>Reset ALL Settings</button>");
+            var thtml = "<button id='reset_settings_btn'>Reset ALL Settings</button><br /><br />";
+            thtml += "Must be logged in and at the correct charactar to list it's items.<br />";
+            thtml += "<button id='list_inventory_btn'>List Inventory</button>";
+            tab.html(thtml);
 
             $('#reset_settings_btn').button();
             $('#reset_settings_btn').click(function() {
@@ -3551,6 +3684,59 @@ function _select_Gateway() { // Check for Gateway used to
                         unsafeWindow.location.href = current_Gateway;
                     }, 0);
                 }, 0);
+            });
+
+
+            $('#list_inventory_btn').button();
+            $('#list_inventory_btn').click(function() {
+                var _inventory;
+                try {
+                    _inventory = client.dataModel.model.ent.main.inventory;
+                }
+                catch (e) {
+                    var str = "Inventory could not be loaded, make sure you are logged in and at the correct character."
+                    $('<div id="dialog-error-inventory" title="Error loading inventory">' + str + '</div>').dialog({
+                          resizable: true,
+                          width: 500,
+                          modal: false,
+                        });        
+                    return;
+                }
+                var inv_tbl_head = "<table><tr><th>Slot #</th><th>Qty</th><th>Item Name</th><th>Rarity</th><th>Bound</th></tr>";
+                var str = '';
+                var slotCnt = 0;
+                _inventory.playerbags.forEach(function (bag) {
+                    str += '<div>' + bag.name + '</div>';
+                    str += inv_tbl_head;
+                    bag.slots.forEach( function (slot, slotNum) {
+                        if (!slot) return;
+                        slotCnt++;
+                        str += '<tr><td>' + slotNum + 
+                            '</td><td>' + slot.count + '</td><td class=" rarity_' + slot.rarity + '">' + slot.name +
+                            '</td><td>' + slot.rarity + '</td><td>' + (slot.bound || slot.boundtoaccount) +  '</td></tr>';
+                    })
+                    str += '</table><br/>';
+                })
+                
+                
+                str += '<div>Resources</div>';
+                str += inv_tbl_head;
+                var bag = _inventory.tradebag;
+                bag = bag.slice(0,slotCnt);
+                bag.forEach( function (slot, slotNum) {
+                    if (!slot) return;
+                    str += '<tr><td>' + slotNum + 
+                        '</td><td>' + slot.count + '</td><td class=" rarity_' + slot.rarity + '">' + slot.name +
+                        '</td><td>' + slot.rarity + '</td><td>' + (slot.bound || slot.boundtoaccount) +  '</td></tr>';
+                })
+                str += '</table>';
+                
+                $('<div id="dialog-inventory" title="Inventory listing">' + str + '</div>').dialog({
+                      resizable: true,
+                      width: 550,
+                      height: 550,
+                      modal: false,
+                    });        
             });
 
             
@@ -3650,7 +3836,7 @@ function _select_Gateway() { // Check for Gateway used to
 
             var tabs = {
                 main: tr('tab.general'),
-                
+                prof: tr('tab.professions'),
                 vend: tr('tab.vendor'),
                 bank: tr('tab.consolidation')
             };
@@ -3669,9 +3855,20 @@ function _select_Gateway() { // Check for Gateway used to
             temp_tab = addTab("#info_tabs", tr('tab.visits'));
             temp_tab.append("<div id='sca_v'></div>");
             
+            temp_tab = addTab("#info_tabs", tr('tab.workers'));
+            temp_tab.append("<div id='worker_overview'></div>");
+            
+            temp_tab = addTab("#info_tabs", tr('tab.tools'));
+            temp_tab.append("<div id='tools_overview'></div>");
+            
             temp_tab = addTab("#info_tabs", tr('tab.resources'));
             temp_tab.append("<div id='resource_tracker'></div>");
             
+            temp_tab = addTab("#info_tabs", tr('tab.levels'));
+            temp_tab.append("<div id='profession_levels'></div>");
+            
+            temp_tab = addTab("#info_tabs", tr('tab.slots'));
+            temp_tab.append("<div id='slot_tracker'></div>");
             $("#info_tabs").tabs({ active: false, collapsible: true });                
 
             
@@ -3725,6 +3922,60 @@ function _select_Gateway() { // Check for Gateway used to
                 });
                 task_tab.append(tableHTML);
 
+                // Manual Slots allocation tab
+                var task2_tab = addTab(char_tabs[0], "Manual Tasks");
+                
+                var tableHTML2 = $('<table><thead><tr><th>Slot #</th><th>Profession</th><th>Profile</th></tr></thead><tbody>');
+
+                var taskOpts = [];
+                tasklist.forEach(function(task) {
+                    if (!task.taskActive) return;
+                    taskOpts.push({ name: task.taskListName, value: task.taskListName  });
+                    
+                })
+                
+                function fillProfile(taskName) {
+                    var _profiles = tasklist.filter(function(task) {
+                        return task.taskListName == taskName;
+                    })[0].profiles.filter(function(profile) {
+                        return profile.isProfileActive
+                    });
+                    var options = [];
+                    _profiles.forEach(function(profile) {
+                        options.push({ name: profile.profileName, value: profile.profileName });
+                    });
+                    return options;
+                }
+                
+                // 9 slots
+                for (var j = 0; j < 9; j++) {
+                    var _tasks = {scope: 'char_task', group: 'taskListSettingsManual', name: j, sub_name: 'Profession', opts: taskOpts ,title: 'Assign to slot #' +(j+1), type: 'select', pane: 'tasks2', tooltip: '',
+                            onchange: function (newValue, elm) {
+                                var profileId = $(elm).attr('id').split('__');
+                                profileId[profileId.length-1] = 'Profile';
+                                profileId = profileId.join('__');
+                                var profileSelect = $("[id='" + profileId + "']").empty();
+                                fillProfile(newValue).forEach(function(option) {
+                                    profileSelect.append($("<option />").val(option.value).text(option.name));
+                                });
+                                profileSelect.change();
+                            }
+                        };
+                    var _tsk = createInput(_tasks, charName, 'settingsInput taskListSettingsManual taskListSettingsManualTask', 'settingsLabel');
+                    
+                    var _profile = {scope: 'char_task', group: 'taskListSettingsManual', name: j, sub_name: 'Profile', opts: fillProfile($(_tsk.input).val()) ,title: '', type: 'select', pane: 'tasks2', tooltip: ''};
+                    var _prf = createInput(_profile, charName, 'settingsInput taskListSettingsManual taskListSettingsManualProfile', 'settingsLabel');
+                    
+                    var tr = $("<tr>");
+                    //$("<td>").append(_slt.label).appendTo(tr);
+                    $("<td>").append(_tsk.label).appendTo(tr);
+                    $("<td>").append(_tsk.input).appendTo(tr);
+                    $("<td>").append(_prf.input).appendTo(tr);
+                    tr.appendTo(tableHTML2);
+                }
+                task2_tab.append(tableHTML2);
+
+                // Char settings tabs
                 var tabs_c = {
                     main: 'General settings',
                     prof: 'Professions',
@@ -3747,62 +3998,8 @@ function _select_Gateway() { // Check for Gateway used to
             });
             $(".charSettingsTabs").tabs();
   
-/*
-
-            // Manual Slots allocation tab
-            addText += '<div id="charSettingsTab-2-' + i + '" class="charSettingsTab" >';
-            addText += '<input type="checkbox" name="settings__char__' + i + '__tasksOverride" /><label> Use advanced slot allocations -- NOT FULLY IMPLEMENTED YET </label>';
-            addText += '<table><thead><tr><th>Slot #</th><th>Profession</th><th>Profile</th><th>fill assets</th></tr></thead><tbody>';
-
-            for (var m = 1; m <= 9; m++) {
-                addText += '<tr>';
-                addText += '<td>' + m + '.</td>';
-                var _id = 'settings__char__' + i + '__slot__' + m;
-                var _attrib = '';
-                addText += '<td><select class="taskSelectA" style="margin: 4px; padding: 2px;" name="' + _id + '__profession" id="' + _id + '__profession">';
-                tasklist.forEach(function(task) {
-                    addText += '<option value="' + task.taskListName + '">' + task.taskListName + '</option>';
-                })
-                addText += '</select></td>';
-                addText += '<td><select class="" style="margin: 4px; padding: 2px;" name="' + _id + '__profession__profile" id="' + _id + '__profession__profile"></select></td>';
-                addText += '<td><select class="" style="margin: 4px; padding: 2px;" name="' + _id + '__profession__assets" id="' + _id + '__profession__assets">';
-                $.each(charSlotsFillAssetsOptions, function(index, value) {
-                    addText += '<option value="' + index + '">' + value + '</option>';
-                });
-                addText += '</select></td>';
-                addText += '</tr>';
-            }
-            addText += '</tbody></table></div>';
-            addText += '</div>'; // charContainer
-        }
-        addText += '\
-                    </div>\
-                ';
-        $("#settingsPanel form").append(addText);
-
-
-        // Set up the advanced slot selects 
-        $(".taskSelectA").change(function(e) {
-            var _taskname = $(this).val();
-            var _profiles = tasklist.filter(function(task) {
-                return task.taskListName == _taskname;
-            })[0].profiles.filter(function(profile) {
-                return profile.isProfileActive
-            });
-
-            var _options = "";
-            //tasklist[" .profiles.forEach( function(profile) { if (profile.isProfileActive) profileNames.push({name: profile.profileName, value: profile.profileName}); } ); 
-
-            var profileSelect = $("#" + this.id + "__profile").html("");
-            _profiles.forEach(function(profile) {
-                profileSelect.append($("<option />").val(profile.profileName).text(profile.profileName));
-            });
-        });
-        $(".taskSelectA").change();
-
-*/
             setEventHandlers = true;
-            updateCounters(false);
+            updateCounters();
         }
 
         // Adding the save events
@@ -3832,25 +4029,16 @@ function _select_Gateway() { // Check for Gateway used to
 
             var fun = $(elm).data('onchange');
             if (typeof fun === 'function') {
-                var retval = fun(value);
+                var retval = fun(value, elm);
                 if (retval === false ) return;  // Allowing the onchange function to stop the save
             }
             
-            /*
-            var setting = settingnames.filter(function(elem) {
-                return elem.scope == scope && elem.group == group && elem.name == name;
-            });
-            if (setting.length > 0 && setting[0].onchange != undefined) {
-                setting[0].onchange(value);
-            }
-            */
-           
             switch (scope) {
                 case 'script':
                     scriptSettings[group][name] = value;
                     setTimeout(function() {
                         GM_setValue("settings__script", JSON.stringify(scriptSettings));
-                        console.log("Saved script setting: " + scope + "." + group + "." + name);
+                        console.log("Saved script setting: " + scope + "." + group + "." + name + " Value: " + value);
                         $(elm).addClass("inputSaved");
                         setTimeout(function() {
                             $(elm).removeClass("inputSaved");
@@ -3861,7 +4049,7 @@ function _select_Gateway() { // Check for Gateway used to
                     accountSettings[group][name] = value;
                     setTimeout(function() {
                         GM_setValue("settings__account__" + loggedAccount, JSON.stringify(accountSettings));
-                        console.log("Saved account setting: " + scope + "." + group + "." + name + " For: " + loggedAccount);
+                        console.log("Saved account setting: " + scope + "." + group + "." + name + " Value: " + value + " For: " + loggedAccount);
                         $(elm).addClass("inputSaved");
                         setTimeout(function() {
                             $(elm).removeClass("inputSaved");
@@ -3875,7 +4063,7 @@ function _select_Gateway() { // Check for Gateway used to
                         charSettingsList[c_name][group][name] = value;
                         setTimeout(function() {
                             GM_setValue("settings__char__" + c_name + "@" + loggedAccount, JSON.stringify(charSettingsList[c_name]));
-                            console.log("Saved char setting: " + scope + "." + group + "." + name + " For: " + c_name);
+                            console.log("Saved char setting: " + scope + "." + group + "." + name + " Value: " + value + " For: " + c_name);
                             $(elm).addClass("inputSaved");
                             setTimeout(function() {
                                 $(elm).removeClass("inputSaved");
@@ -3890,7 +4078,7 @@ function _select_Gateway() { // Check for Gateway used to
                         charSettingsList[c_name][group][name][sub_name] = value;
                         setTimeout(function() {
                             GM_setValue("settings__char__" + c_name + "@" + loggedAccount, JSON.stringify(charSettingsList[c_name]));
-                            console.log("Saved char_task setting: " + scope + "." + group + "." + name + "." + sub_name + " For: " + c_name);
+                            console.log("Saved char_task setting: " + scope + "." + group + "." + name + "." + sub_name + " Value: " + value + " For: " + c_name);
                             $(elm).addClass("inputSaved");
                             setTimeout(function() {
                                 $(elm).removeClass("inputSaved");
@@ -4042,7 +4230,7 @@ function _select_Gateway() { // Check for Gateway used to
     }
 
 
-    function updateCounters(reset) {
+    function updateCounters() {
 
         function formatNum(num) {
             if ((num / 1000000) > 1)
@@ -4052,24 +4240,22 @@ function _select_Gateway() { // Check for Gateway used to
             return Math.floor(num);
         }
 
-        var total = 0;
+        var total = [0, 0, 0, 0];
         var html = '<table>';
         html += "<tr><th>Character Name</th><th>#slots</th><th>R.Counter</th><th>~ad/h</th>";
         html += "<th>RAD</th><th>AD</th><th>gold</th><th>rBI</th><th>BI</th><th>R.today<th></th></tr>";
 
-        if (reset) {
-            charNamesList.forEach(function(charName) {
-                charStatisticsList[charName].general.refineCounter = 0;
-                charStatisticsList[charName].general.refineCounterReset = Date.now();
-            });
-        };
 
         charNamesList.forEach(function(charName) {
             var counterTime = (Date.now() - charStatisticsList[charName].general.refineCounterReset) / 1000 / 60 / 60; // in hours.
             var radh = 0;
             if (counterTime > 0) radh = charStatisticsList[charName].general.refineCounter / counterTime;
+            var outdated = (charStatisticsList[charName].general.lastVisit < lastDailyResetTime);
 
-            total += charStatisticsList[charName].general.refineCounter;
+            total[0] += charStatisticsList[charName].general.refineCounter;
+            total[1] += charStatisticsList[charName].general.diamonds;
+            total[2] += charStatisticsList[charName].general.gold;
+            total[3] += outdated ? 0 : charStatisticsList[charName].general.refined;
 
             html += "<tr>";
             html += "<td>" + charName + "</td>";
@@ -4081,19 +4267,115 @@ function _select_Gateway() { // Check for Gateway used to
             html += "<td>" + formatNum(charStatisticsList[charName].general.gold) + "</td>";
             html += "<td>" + formatNum(charStatisticsList[charName].general.rBI) + "</td>";
             html += "<td>" + formatNum(charStatisticsList[charName].general.BI) + "</td>";
-            html += "<td>" + formatNum(charStatisticsList[charName].general.refined) + "</td>";
+            html += "<td>" + (outdated ? "0*" : formatNum(charStatisticsList[charName].general.refined)) + "</td>";
             //html += "<td>" + formatNum(charStatisticsList[charName].general.refineLimitLeft) + "</td>";
             html += "</tr>";
         });
+        html += "<tr class='totals'><td>Totals (without AD in ZAX):</td><td></td><td>" +  formatNum(total[0]) +  "</td><td></td>";
+        html += "<td></td><td>" + formatNum(total[1]) + "</td><td>" + formatNum(total[2]) + "</td>";
+        html += "<td></td><td></td><td>" + formatNum(total[3]) + "<td></td></tr>";
         html += "</table>";
-        html += "<div style='margin: 5px 0;'> Total refined: " + total + "</div>";
+        html += "*No info for this reset yet. <br />";
         html += "<button>Reset Refined Counter</button>";
         $('#rcounters').html(html);
 
         $('#rcounters button').button();
         $('#rcounters button').click(function() {
-            updateCounters(true);
+            charNamesList.forEach(function(charName) {
+                charStatisticsList[charName].general.refineCounter = 0;
+                charStatisticsList[charName].general.refineCounterReset = Date.now();
+                // !! This can couse a freeze on slow computers.                
+                GM_setValue("statistics__char__" + charName + "@" + loggedAccount , JSON.stringify(charStatisticsList[charName]));
+            });
+            updateCounters();
         });
+
+        // Worker tab update.
+        html = '<table class="professionRanks">';
+        var temp = "";
+        html += "<tr><th>Char name</th>";
+        var options = "";
+        var workerTabSelects = ["Leadership", "Alchemy", "Leadership"];
+        $.each(charStatisticsList[charNamesList[0]].professions, function(profession) {
+            options += "<option value='" + profession + "'>" + profession + "</option>";
+        })
+
+        for (var i = 0; i < 3; i++) {
+            //saving current select values
+            if ($('#setting__worker__tab__p' + i).val()) workerTabSelects[i] = $('#setting__worker__tab__p' + i).val();
+            html += "<th colspan=6>" + "<select name='setting__worker__tab__p" + i + "' id='setting__worker__tab__p" + i + "'>" + options + "</select></th>";
+            temp += "<th>p</th><th>b</th><th>g</th><th>t3</th><th>t2</th><th>t1</th>";
+        }
+        html += "</tr><tr><th></th>" + temp + "</tr>";
+        charNamesList.forEach(function(charName) {
+            temp = "";
+            html += "<tr><td rowspan=2>" + charName + "</td>";
+            for (var i = 0; i < 3; i++) {
+                var list = charStatisticsList[charName].professions[workerTabSelects[i]];
+                for (var ix = 0; ix < 6; ix++) {
+                    html += "<td class='ranked'>" + $.trim(list.workersUsed[ix]) + "</td>";
+                    temp += "<td class='ranked2'>" + $.trim(list.workersUnused[ix]) + "</td>";
+                };
+            }
+            /*
+            $.each(charStatisticsList[charName].workers, function (pf, list) {
+                for (var ix = 0; ix < 6; ix++)  {
+                    html += "<td class='ranked'>" + $.trim(list.used[ix]) + "</td>";
+                    temp += "<td class='ranked2'>" + $.trim(list.unused[ix]) + "</td>";
+                };
+            })
+            */
+            html += "</tr><tr>" + temp + "</tr>";
+        })
+
+        html += "</table>";
+        $('#worker_overview').html(html);
+        for (var i = 0; i < 3; i++) {
+            $('#setting__worker__tab__p' + i).val(workerTabSelects[i]);
+            $('#setting__worker__tab__p' + i).change(function() {
+                updateCounters();
+            });
+        }
+
+        // Tools tab update.
+        html = '<table class="professionRanks">';
+        var temp = "";
+        html += "<tr><th>Char name</th>";
+        var options = "";
+        var toolsTabSelects = ["Crucible", "Mortar", "Philosophersstone", "Graver"];
+        $.each(charStatisticsList[charNamesList[0]].tools, function(tool) {
+            options += "<option value='" + tool + "'>" + tool + "</option>";
+        });
+
+        for (var i = 0; i < 4; i++) {
+            //saving current select values
+            if ($('#setting__tools__tab__p' + i).val()) toolsTabSelects[i] = $('#setting__tools__tab__p' + i).val();
+            html += "<th colspan=4>" + "<select name='setting__tools__tab__p" + i + "' id='setting__tools__tab__p" + i + "'>" + options + "</select></th>";
+            temp += "<th>p</th><th>b</th><th>g</th><th>w</th>";
+        }
+        html += "</tr><tr><th></th>" + temp + "</tr>";
+        charNamesList.forEach(function(charName) {
+            temp = "";
+            html += "<tr><td rowspan=2>" + charName + "</td>";
+            for (var i = 0; i < 4; i++) {
+                var list = charStatisticsList[charName].tools[toolsTabSelects[i]];
+                for (var ix = 0; ix < 4; ix++) {
+                    html += "<td class='tranked'>" + $.trim(list.used[ix]) + "</td>";
+                    temp += "<td class='tranked2'>" + $.trim(list.unused[ix]) + "</td>";
+                };
+            }
+            html += "</tr><tr>" + temp + "</tr>";
+        })
+
+        html += "</table>";
+        $('#tools_overview').html(html);
+        for (var i = 0; i < 4; i++) {
+            $('#setting__tools__tab__p' + i).val(toolsTabSelects[i]);
+            $('#setting__tools__tab__p' + i).change(function() {
+                updateCounters();
+            });
+        }
+
 
         // Resource tracker update.
         html = '<table><tr><th>Character Name</th>';
@@ -4111,6 +4393,47 @@ function _select_Gateway() { // Check for Gateway used to
         html += "</table>";
         $('#resource_tracker').html(html);
 
+
+        // 'profession_levels' tab
+        html = '<table class="professionLevels">';
+        html += "<tr><th class='rotate'><div><span>Character Name</div></span></th>";
+        html += "<th class='rotate'><div><span>#slots</div></span></th>";
+        $.each(charStatisticsList[charNamesList[0]].professions, function(profession) {
+            html += "<th class='rotate'><div><span>" + profession + "</div></span></th>";
+        });
+        html += "</tr>";
+        charNamesList.forEach(function(charName) {
+            html += "<tr>";
+            html += "<td>" + charName + "</td>";
+            html += "<td>" + charStatisticsList[charName].general.activeSlots + "</td>";
+            $.each(charStatisticsList[charName].professions, function(name, profData) {
+                html += "<td>" + profData.level + "</td>";
+            });
+            html += "</tr>";
+        });
+        html += "</table>";
+        $('#profession_levels').html(html);
+
+        // 'slot_tracker' tab
+        html = '<table>';
+        html += "<tr><th>Character Name</th>";
+        for (var i = 0; i < 9; i++) {
+            html += "<th> #" + (i + 1) + " </th>";
+        }
+        html += "</tr>";
+
+        charNamesList.forEach(function(charName) {
+            html += "<tr>";
+            html += "<td>" + charName + "</td>";
+            for (var i = 0; i < 9; i++) {
+                html += "<td>" + $.trim(charStatisticsList[charName].slotUse[i]).substring(0, 3) + " </td>";
+            }
+            html += "</tr>";
+        });
+        html += "</table>";
+        $('#slot_tracker').html(html);
+        
+        
         // Visit times and SCA tab
         html = '<table>';
         html += "<tr><th>Character Name</th><th>Next Profession</th><th>Last SCA</th>";
@@ -4142,7 +4465,7 @@ function _select_Gateway() { // Check for Gateway used to
             if (value) { 
                 console.log("Reseting for " + charNamesList[value-1]);
                 chartimers[parseInt(value)-1] = null;
-                updateCounters(false);
+                updateCounters();
                 clearTimeout(timerHandle);
                 curCharNum = GM_setValue("curCharNum_" + loggedAccount, parseInt(value)-1);
                 timerHandle = window.setTimeout(function() {
@@ -4304,7 +4627,11 @@ function _select_Gateway() { // Check for Gateway used to
                 'tab.other': 'Other',
                 'tab.counters': 'Refine Counters',
                 'tab.visits': 'SCA & Visits',
+                'tab.workers': 'Workers',
+                'tab.tools': 'Tools',
                 'tab.resources': 'Resource Tracker',
+                'tab.levels': 'Prof levels',
+                'tab.slots': 'Slots',
                 'static.settings': 'Settings',
                 'button.save&apply': 'Save and Apply',
                 'button.close': 'Close',
@@ -4345,7 +4672,11 @@ function _select_Gateway() { // Check for Gateway used to
                 'tab.other': 'Pozostałe',
                 'tab.counters': 'Liczniki szlifowania',
                 'tab.visits': 'Nast.zadanie i SCA',
+                'tab.workers': 'Pracownicy',
+                'tab.tools': 'Narzędzia',
                 'tab.resources': 'Surowce',
+                'tab.levels': 'Poziomy prof.',
+                'tab.slots': 'Sloty',
                 'static.settings': 'Ustawienia',
                 'button.save&apply': 'Zapisz i zastosuj',
                 'button.close': 'Zamknij',
@@ -4426,3 +4757,68 @@ function _select_Gateway() { // Check for Gateway used to
 })();
 
 
+
+
+function workerDefinition() {
+    return {
+        // purple, blue, green, t3, t2, t1
+        "Leadership": ["Crafting_Asset_Craftsman_Leadership_T3_Epic", "Crafting_Asset_Craftsman_Leadership_T3_Rare", "Crafting_Asset_Craftsman_Leadership_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Leadership_T3_Common", "Crafting_Asset_Craftsman_Leadership_T2_Common", "Crafting_Asset_Craftsman_Leadership_T1_Common_1"
+        ],
+        "Alchemy": ["Asset_Craftsman_Alchemy_T3_Epic", "Asset_Craftsman_Alchemy_T3_Rare", "Asset_Craftsman_Alchemy_T3_Uncommon",
+            "Asset_Craftsman_Alchemy_T3_Common", "Asset_Craftsman_Alchemy_T2_Common", "Asset_Craftsman_Alchemy_T1_Common"
+        ],
+        "Jewelcrafting": ["Crafting_Asset_Craftsman_Jewelcrafter_T3_Epic", "Crafting_Asset_Craftsman_Jewelcrafter_T3_Rare", "Crafting_Asset_Craftsman_Jewelcrafter_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Jewelcrafter_T3_Common", "Crafting_Asset_Craftsman_Jewelcrafter_T2_Common", "Crafting_Asset_Craftsman_Jewelcrafter_T1_Common"
+        ],
+        "Weaponsmithing": ["Crafting_Asset_Craftsman_Weaponsmith_T3_Epic", "Crafting_Asset_Craftsman_Weaponsmith_T3_Rare", "Crafting_Asset_Craftsman_Weaponsmith_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Weaponsmith_T3_Common", "Crafting_Asset_Craftsman_Weaponsmith_T2_Common", "Crafting_Asset_Craftsman_Weaponsmith_T1_Common"
+        ],
+        "Artificing": ["Crafting_Asset_Craftsman_Artificing_T3_Epic", "Crafting_Asset_Craftsman_Artificing_T3_Rare", "Crafting_Asset_Craftsman_Artificing_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Artificing_T3_Common", "Crafting_Asset_Craftsman_Artificing_T2_Common", "Crafting_Asset_Craftsman_Artificing_T1_Common"
+        ],
+        "Mailsmithing": ["Crafting_Asset_Craftsman_Armorsmithing_Med_T3_Epic", "Crafting_Asset_Craftsman_Armorsmithing_Med_T3_Rare", "Crafting_Asset_Craftsman_Armorsmithing_Med_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Armorsmithing_Med_T3_Common", "Crafting_Asset_Craftsman_Armorsmithing_Med_T2_Common", "Crafting_Asset_Craftsman_Armorsmithing_Med_T1_Common"
+        ],
+        "Platesmithing": ["Crafting_Asset_Craftsman_Armorsmithing_Hvy_T3_Epic", "Crafting_Asset_Craftsman_Armorsmithing_Hvy_T3_Rare", "Crafting_Asset_Craftsman_Armorsmithing_Hvy_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Armorsmithing_Hvy_T3_Common", "Crafting_Asset_Craftsman_Armorsmithing_Hvy_T2_Common", "Crafting_Asset_Craftsman_Armorsmithing_Hvy_T1_Common"
+        ],
+        "Leatherworking": ["Crafting_Asset_Craftsman_Leatherworking_T3_Epic", "Crafting_Asset_Craftsman_Leatherworking_T3_Rare", "Crafting_Asset_Craftsman_Leatherworking_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Leatherworking_T3_Common", "Crafting_Asset_Craftsman_Leatherworking_T2_Common", "Crafting_Asset_Craftsman_Leatherworking_T1_Common"
+        ],
+        "Tailoring": ["Crafting_Asset_Craftsman_Tailoring_T3_Epic", "Crafting_Asset_Craftsman_Tailoring_T3_Rare", "Crafting_Asset_Craftsman_Tailoring_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Tailoring_T3_Common", "Crafting_Asset_Craftsman_Tailoring_T2_Common", "Crafting_Asset_Craftsman_Tailoring_T1_Common"
+        ],
+        "Black Ice Shaping": ["Crafting_Asset_Craftsman_Blackice_T3_Epic", "Crafting_Asset_Craftsman_Blackice_T3_Rare", "Crafting_Asset_Craftsman_Blackice_T3_Uncommon",
+            "Crafting_Asset_Craftsman_Blackice_T3_Common"
+        ],
+        /*
+            "Winter Event":     ["Crafting_Asset_Craftsman_Winter_Event_T1_Common"],
+            "Siege Event":      [],
+            */
+    }
+}
+
+function toolListDefinition() {
+    return {
+        "Awl": ["Crafting_Asset_Tool_Awl_Epic", "Crafting_Asset_Tool_Awl_Rare", "Crafting_Asset_Tool_Awl_Uncommon", "Crafting_Asset_Tool_Awl_Common"],
+        "Shears": ["Crafting_Asset_Tool_Shears_Epic", "Crafting_Asset_Tool_Shears_Rare", "Crafting_Asset_Tool_Shears_Uncommon", "Crafting_Asset_Tool_Shears_Common"],
+        "Hammer": ["Crafting_Asset_Tool_Hammer_Epic", "Crafting_Asset_Tool_Hammer_Rare", "Crafting_Asset_Tool_Shears_Uncommon", "Crafting_Asset_Tool_Hammer_Common", ],
+        "Needle": ["Crafting_Asset_Tool_Needle_Epic", "Crafting_Asset_Tool_Needle_Rare", "Crafting_Asset_Tool_Needle_Uncommon", "Crafting_Asset_Tool_Needle_Common", ],
+        "Bellows": ["Crafting_Asset_Tool_Bellows_Epic", "Crafting_Asset_Tool_Bellows_Rare", "Crafting_Asset_Tool_Bellows_Uncommon", "Crafting_Asset_Tool_Bellows_Common"],
+        "Bezelpusher": ["Crafting_Asset_Tool_Bezelpusher_Epic", "Crafting_Asset_Tool_Bezelpusher_Rare", "Crafting_Asset_Tool_Bezelpusher_Uncommon", "Crafting_Asset_Tool_Bezelpusher_Common"],
+        "Mortar": ["Asset_Tool_Mortar_Epic", "Asset_Tool_Mortar_Rare", "Asset_Tool_Mortar_Uncommon", "Asset_Tool_Mortar_Common"],
+        "Anvil": ["Crafting_Asset_Tool_Anvil_Epic", "Crafting_Asset_Tool_Anvil_Rare", "Crafting_Asset_Tool_Anvil_Uncommon", "Crafting_Asset_Tool_Anvil_Common", ],
+        "Grindstone": ["Crafting_Asset_Tool_Grindstone_Epic", "Crafting_Asset_Tool_Grindstone_Rare", "Crafting_Asset_Tool_Grindstone_Uncommon", "Crafting_Asset_Tool_Grindstone_Common", ],
+        "Philosophersstone": ["Asset_Tool_Philosophersstone_Epic", "Asset_Tool_Philosophersstone_Rare", "Asset_Tool_Philosophersstone_Uncommon", "Asset_Tool_Philosophersstone_Common"],
+        "Loupe": ["Crafting_Asset_Tool_Loupe_Epic", "Crafting_Asset_Tool_Loupe_Rare", "Crafting_Asset_Tool_Loupe_Uncommon", "Crafting_Asset_Tool_Loupe_Common", ],
+        "Graver": ["Crafting_Asset_Tool_Graver_Epic", "Crafting_Asset_Tool_Graver_Rare", "Crafting_Asset_Tool_Graver_Uncommon", "Crafting_Asset_Tool_Graver_Common", ],
+        "Crucible": ["Asset_Tool_Crucible_Epic", "Asset_Tool_Crucible_Rare", "Asset_Tool_Crucible_Uncommon", "Asset_Tool_Crucible_Common", ],
+        "Tongs": ["Crafting_Asset_Tool_Tongs_Epic", "Crafting_Asset_Tool_Tongs_Rare", "Crafting_Asset_Tool_Tongs_Uncommon", "Crafting_Asset_Tool_Tongs_Common", ],
+        /*
+        "Crafting_Asset_Tool_Leatherworking_T1_Epic",
+        "Crafting_Asset_Tool_Gauntlets_Common"
+        "Crafting_Asset_Tool_Leadership_T3_Common","Crafting_Asset_Tool_Leadership_T2_Common"
+        */
+    }
+}
