@@ -11,7 +11,7 @@
 // @originalAuthor Mustex/Bunta
 // @modifiedBy NW gateway Professions Bot Developers & Contributors
 
-// @version 4.0
+// @version 4.1
 // @license http://creativecommons.org/licenses/by-nc-sa/3.0/us/
 // @grant GM_getValue
 // @grant GM_setValue
@@ -37,6 +37,13 @@ Developers & Contributors
 - WloBeb
 
 RELEASE NOTES
+4.1
+- Added settings copy tab
+- Added script version display
+- Added Settings Listing to Advanced tab
+- Added Item Listing to Advanced tab (thanks WloBeb script idea)
+- Override display at visit tab
+- Various fixes
 4.0
 - Per slot task & profile allocation tab (functional)
 - Settings are saved per account / char.
@@ -51,11 +58,6 @@ RELEASE NOTES
 - Translation support (thanks WloBeb)
 - Profile adjustments
 - addProfile() for easier profiles (thanks WloBeb, dlebedynskyi)
-3.1
-- A lot of backend changes
-- Added mass refining profiles for some professions
-- Logic change at how we add new profession profiles
-- Added autovendor option for major potions
 
 Check Changelog.txt for the full changelog:
 http://rawgit.com/Phr33d0m/NW-Profession-Bot/master/Changelog.txt
@@ -63,7 +65,7 @@ http://rawgit.com/Phr33d0m/NW-Profession-Bot/master/Changelog.txt
 
 // Make sure it's running on the main page, no frames
 
-var scriptVersion = 4.0;
+var scriptVersion = 4.1;
 var forceSettingsResetOnUpgrade = true;
 var forceResetOnVerBelow = 3.5;
 
@@ -358,7 +360,6 @@ function _select_Gateway() { // Check for Gateway used to
         var profileBase = {
             profileName: 'Add profile name',
             isProfileActive: true,
-            recursiveList: true,
             level: {}
         };
 
@@ -403,14 +404,17 @@ function _select_Gateway() { // Check for Gateway used to
             //override
             if(profile.level && profile.level[i]) {
                 newProfile.level[i] = profile.level[i];
+                if (profile.recursiveList && i > 0 && !profile.level[i+1]) {
+                    profile.level[i+1] = profile.level[i];
+                }
                 continue;
-            }
+            } 
             //iterate and set
-            if(newProfile.recursiveList && i > 0) {
+            if(profile.recursiveList && i > 0 && !newProfile.level[i]) {
                 newProfile.level[i] = newProfile.level[i - 1];
             }
         }
-
+        console.info("profile added ",newProfile.profileName, newProfile);
         professionSet.profiles.push(newProfile);
     }
 
@@ -1199,7 +1203,7 @@ function _select_Gateway() { // Check for Gateway used to
     });
    
     addProfile("Leatherworking", {
-        profileName: "craft  Elemental Trousers(?)",
+        profileName: "craft  Elemental Trousers",
         level: {
             //purples  first. shirts > tunics > pants.
             25: ['Leatherworking_Tier4_Leather_Pants_Special_2_Set2', //Exquisite Elemental Trousers
@@ -1446,31 +1450,31 @@ function _select_Gateway() { // Check for Gateway used to
             isProfileActive: true,
             level: {
                 0: ["Alchemy_Tier0_Intro_1"],
-                1: ["Alchemy_Tier1_Experiment_Rank2", "Alchemy_Tier1_Experimentation_Rank1", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                2: ["Alchemy_Tier1_Experiment_Rank3", "Alchemy_Tier1_Experimentation_Rank2", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                3: ["Alchemy_Tier1_Experiment_Rank4", "Alchemy_Tier1_Experimentation_Rank3", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                4: ["Alchemy_Tier1_Experiment_Rank5", "Alchemy_Tier1_Experimentation_Rank4", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                5: ["Alchemy_Tier1_Experiment_Rank6", "Alchemy_Tier1_Experimentation_Rank5", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                6: ["Alchemy_Tier1_Experiment_Rank7", "Alchemy_Tier1_Experimentation_Rank6", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                7: ["Alchemy_Tier2_Experiment_Rank08", "Alchemy_Tier2_Experimentation_Rank07", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                8: ["Alchemy_Tier2_Experiment_Rank09", "Alchemy_Tier2_Experimentation_Rank08", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                9: ["Alchemy_Tier2_Experiment_Rank10", "Alchemy_Tier2_Experimentation_Rank09", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                10: ["Alchemy_Tier2_Experiment_Rank11", "Alchemy_Tier2_Experimentation_Rank10", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                11: ["Alchemy_Tier2_Experiment_Rank12", "Alchemy_Tier2_Experimentation_Rank11", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                12: ["Alchemy_Tier2_Experiment_Rank13", "Alchemy_Tier2_Experimentation_Rank12", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                13: ["Alchemy_Tier2_Experiment_Rank14", "Alchemy_Tier2_Experimentation_Rank13", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                14: ["Alchemy_Tier3_Experiment_Rank15", "Alchemy_Tier3_Experimentation_Rank14", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                15: ["Alchemy_Tier3_Experiment_Rank16", "Alchemy_Tier3_Experimentation_Rank15", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                16: ["Alchemy_Tier3_Experiment_Rank17", "Alchemy_Tier3_Experimentation_Rank16", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                17: ["Alchemy_Tier3_Experiment_Rank18", "Alchemy_Tier3_Experimentation_Rank17", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                18: ["Alchemy_Tier3_Experiment_Rank19", "Alchemy_Tier3_Experimentation_Rank18", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                19: ["Alchemy_Tier3_Experiment_Rank20", "Alchemy_Tier3_Experimentation_Rank19", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic"],
-                20: ["Alchemy_Tier3_Experiment_Rank21", "Alchemy_Tier3_Experimentation_Rank20", "Alchemy_Tier2_Aquaregia", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components"],
-                21: ["Alchemy_Tier4_Experiment_Rank22", "Alchemy_Tier4_Experimentation_Rank21", "Alchemy_Tier2_Aquaregia", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components"],
-                22: ["Alchemy_Tier4_Experiment_Rank23", "Alchemy_Tier4_Experimentation_Rank22", "Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components"],
-                23: ["Alchemy_Tier4_Experiment_Rank24", "Alchemy_Tier4_Experimentation_Rank23", "Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components"],
-                24: ["Alchemy_Tier4_Experiment_Rank25", "Alchemy_Tier4_Experimentation_Rank24", "Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components"],
-                25: ["Alchemy_Tier4_Experimentation_Rank25", "Alchemy_Tier4_Create_Elemental_Unified", "Alchemy_Tier4_Create_Elemental_Aggregate", "Alchemy_Tier3_Protection_Potion_Major", "Alchemy_Tier3_Potency_Potion_Major", "Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components"],
+                1: ["Alchemy_Tier1_Experiment_Rank2", "Alchemy_Tier1_Experimentation_Rank1", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier1_Gather_Basic"],
+                2: ["Alchemy_Tier1_Experiment_Rank3", "Alchemy_Tier1_Experimentation_Rank2", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier1_Gather_Basic"],
+                3: ["Alchemy_Tier1_Experiment_Rank4", "Alchemy_Tier1_Experimentation_Rank3", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier1_Gather_Basic"],
+                4: ["Alchemy_Tier1_Experiment_Rank5", "Alchemy_Tier1_Experimentation_Rank4", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier1_Gather_Basic"],
+                5: ["Alchemy_Tier1_Experiment_Rank6", "Alchemy_Tier1_Experimentation_Rank5", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier1_Gather_Basic"],
+                6: ["Alchemy_Tier1_Experiment_Rank7", "Alchemy_Tier1_Experimentation_Rank6", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier1_Gather_Basic"],
+                7: ["Alchemy_Tier2_Experiment_Rank08", "Alchemy_Tier2_Experimentation_Rank07", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier2_Gather_Basic"],
+                8: ["Alchemy_Tier2_Experiment_Rank09", "Alchemy_Tier2_Experimentation_Rank08", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier2_Gather_Basic"],
+                9: ["Alchemy_Tier2_Experiment_Rank10", "Alchemy_Tier2_Experimentation_Rank09", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier2_Gather_Basic"],
+                10: ["Alchemy_Tier2_Experiment_Rank11", "Alchemy_Tier2_Experimentation_Rank10", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier2_Gather_Basic"],
+                11: ["Alchemy_Tier2_Experiment_Rank12", "Alchemy_Tier2_Experimentation_Rank11", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier2_Gather_Basic"],
+                12: ["Alchemy_Tier2_Experiment_Rank13", "Alchemy_Tier2_Experimentation_Rank12", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier2_Gather_Basic"],
+                13: ["Alchemy_Tier2_Experiment_Rank14", "Alchemy_Tier2_Experimentation_Rank13", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier1_Refine_Basic", "Alchemy_Tier2_Gather_Basic"],
+                14: ["Alchemy_Tier3_Experiment_Rank15", "Alchemy_Tier3_Experimentation_Rank14", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Basic"],
+                15: ["Alchemy_Tier3_Experiment_Rank16", "Alchemy_Tier3_Experimentation_Rank15", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Basic"],
+                16: ["Alchemy_Tier3_Experiment_Rank17", "Alchemy_Tier3_Experimentation_Rank16", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Basic"],
+                17: ["Alchemy_Tier3_Experiment_Rank18", "Alchemy_Tier3_Experimentation_Rank17", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Basic"],
+                18: ["Alchemy_Tier3_Experiment_Rank19", "Alchemy_Tier3_Experimentation_Rank18", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Basic"],
+                19: ["Alchemy_Tier3_Experiment_Rank20", "Alchemy_Tier3_Experimentation_Rank19", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier2_Refine_Basic", "Alchemy_Tier1_Refine_Special", "Alchemy_Tier3_Refine_Basic", "Alchemy_Tier3_Gather_Basic"],
+                20: ["Alchemy_Tier3_Experiment_Rank21", "Alchemy_Tier3_Experimentation_Rank20", "Alchemy_Tier2_Aquaregia", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components", "Alchemy_Tier4_Gather_Basic"],
+                21: ["Alchemy_Tier4_Experiment_Rank22", "Alchemy_Tier4_Experimentation_Rank21", "Alchemy_Tier2_Aquaregia", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components", "Alchemy_Tier4_Gather_Basic"],
+                22: ["Alchemy_Tier4_Experiment_Rank23", "Alchemy_Tier4_Experimentation_Rank22", "Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components", "Alchemy_Tier1_Gather_Basic"],
+                23: ["Alchemy_Tier4_Experiment_Rank24", "Alchemy_Tier4_Experimentation_Rank23", "Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components", "Alchemy_Tier1_Gather_Basic"],
+                24: ["Alchemy_Tier4_Experiment_Rank25", "Alchemy_Tier4_Experimentation_Rank24", "Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier4_Gather_Components", "Alchemy_Tier1_Gather_Basic"],
+                25: ["Alchemy_Tier4_Experimentation_Rank25", "Alchemy_Tier4_Create_Elemental_Unified", "Alchemy_Tier4_Create_Elemental_Aggregate", "Alchemy_Tier3_Protection_Potion_Major", "Alchemy_Tier3_Potency_Potion_Major", "Alchemy_Tier4_Aquaregia_2", "Alchemy_Tier4_Refine_Basic", "Alchemy_Tier1_Gather_Basic"],
             },
         }]
     };
@@ -1621,7 +1625,7 @@ function _select_Gateway() { // Check for Gateway used to
         fname: 'e.Aggregate',
         name: 'Crafting_Resource_Elemental_Aggregate'
     }, {
-        fname: 'EU',
+        fname: 'UE',
         name: 'Crafting_Resource_Elemental_Unified'
     }, 
 ];
@@ -1666,6 +1670,7 @@ function _select_Gateway() { // Check for Gateway used to
         customProfiles = [];
     };
     customProfiles.forEach(function (cProfile, idx) {
+        if (!cProfile.profile.hasOwnProperty('recursiveList')){ cProfile.profile.recursiveList = false;}
         addProfile(cProfile.taskName, cProfile.profile, cProfile.baseProfile);
     });
     
@@ -2726,7 +2731,7 @@ function _select_Gateway() { // Check for Gateway used to
 
         if (_purchaseCount < 1) {
             // Not enough gold for 1 resource
-            console.log("Purchasing profession resources failed for:", item);
+            console.log("Purchasing profession resources failed for: ", item, " Have: ",_charCopperTotal, " Cost Per Item: ", _resourceCost[item], " Can buy: ", _resourcePurchasable);
             return false;
         } else {
             // Make purchase
@@ -2989,10 +2994,10 @@ function _select_Gateway() { // Check for Gateway used to
 			}
 		}
 
+        var refined_diamonds = 0;
         if (getSetting('generalSettings', 'refineAD')) {
             var _currencies = unsafeWindow.client.dataModel.model.ent.main.currencies;
             if (_currencies.diamondsconvertleft && _currencies.roughdiamonds) {
-                var refined_diamonds;
                 if (_currencies.diamondsconvertleft < _currencies.roughdiamonds) {
                     refined_diamonds = _currencies.diamondsconvertleft
                 } else {
@@ -3066,11 +3071,11 @@ function _select_Gateway() { // Check for Gateway used to
         var _chardata = unsafeWindow.client.dataModel.model.ent.main.currencies;
         _stat.lastVisit = Date.now();
         _stat.gold = parseInt(_chardata.gold);
-        _stat.rad = parseInt(_chardata.roughdiamonds);
-        _stat.diamonds = parseInt(_chardata.diamonds);
+        _stat.rad = parseInt(_chardata.roughdiamonds - refined_diamonds);  // refined_diamonds: removing and adding manually to compensate for slow model update
+        _stat.diamonds = parseInt(_chardata.diamonds + refined_diamonds);
         _stat.rBI = parseInt(_chardata.rawblackice);
         _stat.BI = parseInt(_chardata.blackice);
-        _stat.refined = parseInt(_chardata.diamondsconverted);
+        _stat.refined = parseInt(_chardata.diamondsconverted + refined_diamonds);
         _stat.diamondsconvertleft = parseInt(_chardata.refineLimitLeft);
         _stat.activeSlots = unsafeWindow.client.dataModel.model.ent.main.itemassignments.active;
 
@@ -3604,6 +3609,8 @@ function _select_Gateway() { // Check for Gateway used to
                 tr.totals > td { border-top: 1px solid grey; padding-top: 3px; } \
                 .rarity_Gold {color: blue; } .rarity_Silver {color: green; } .rarity_Special {color: purple; }  \
                 #dialog-inventory { overflow-y: scroll; font: 10px Arial; } #dialog-inventory table { width: 100% } #dialog-inventory table th { text-align: left; font-weight: bold; }\
+                .slt_None {color: red;} .slt_Lead {color: blue;} .slt_Alch {color: green;} .slt_Jewe {color: gold;} .slt_Leat {color: brown;}\
+                #copy_settings_to { width: 200px; height: 350px; margin: 5px 0;} #copy_settings_from { margin: 5px 0;}\
                 ");
             
 
@@ -3613,7 +3620,7 @@ function _select_Gateway() { // Check for Gateway used to
                 <div id="settings_title">\
                 <span class="ui-icon ui-icon-wrench" style="float: left;"></span>\
                 <span id="settings_close" class="ui-icon ui-icon-closethick" title="Click to hide preferences" style="float: right; cursor: pointer; display: block;"\></span>\
-                <span style="margin:3px">Settings</span>\
+                <span style="margin:3px">Settings (script version ' + scriptVersion + ')</span>\
                 </div>\
                 <div id="script_settings"><ul></ul></div>\
                 <div id="account_settings">\
@@ -3664,7 +3671,9 @@ function _select_Gateway() { // Check for Gateway used to
             tab = addTab("#script_settings", "Advanced");
             var thtml = "<button id='reset_settings_btn'>Reset ALL Settings</button><br /><br />";
             thtml += "Must be logged in and at the correct charactar to list it's items.<br />";
-            thtml += "<button id='list_inventory_btn'>List Inventory</button>";
+            thtml += "<button id='list_inventory_btn'>List Inventory</button><br /><br />";
+            thtml += "List settings (display all the configuration and obscure char names to char 1,2... and banker)<br />";
+            thtml += "<button id='list_settings_btn'>Dump settings </button><br /><br />";
             tab.html(thtml);
 
             $('#reset_settings_btn').button();
@@ -3685,7 +3694,6 @@ function _select_Gateway() { // Check for Gateway used to
                     }, 0);
                 }, 0);
             });
-
 
             $('#list_inventory_btn').button();
             $('#list_inventory_btn').click(function() {
@@ -3714,10 +3722,9 @@ function _select_Gateway() { // Check for Gateway used to
                         str += '<tr><td>' + slotNum + 
                             '</td><td>' + slot.count + '</td><td class=" rarity_' + slot.rarity + '">' + slot.name +
                             '</td><td>' + slot.rarity + '</td><td>' + (slot.bound || slot.boundtoaccount) +  '</td></tr>';
-                    })
+                    });
                     str += '</table><br/>';
-                })
-                
+                });
                 
                 str += '<div>Resources</div>';
                 str += inv_tbl_head;
@@ -3739,7 +3746,40 @@ function _select_Gateway() { // Check for Gateway used to
                     });        
             });
 
-            
+            $('#list_settings_btn').button();
+            $('#list_settings_btn').click(function() {
+                var str = 'Script Settings (script version ' + scriptVersion + ')\n';
+                var tempObj;
+                tempObj = $.extend(true, {}, scriptSettings);
+                str += '' +  JSON.stringify(tempObj,null,4) + '\n';
+                
+                str += 'Account Settings\n';
+                tempObj = $.extend(true, {}, accountSettings);
+                if (accountSettings.consolidationSettings.bankCharName) {
+                    var bankIndex = charNamesList.indexOf(accountSettings.consolidationSettings.bankCharName);
+                    if (bankIndex == -1)  str += "Bank set but not found in charNamesList\n";
+                    else  str += "Bank set and found at index:" + bankIndex + "\n";
+                    tempObj.consolidationSettings.bankCharName = "Char " + bankIndex;
+                }
+                str += '' +  JSON.stringify(tempObj,null,4) + '\n';
+                //str += '<pre>' +  JSON.stringify(tempObj,null,4) + '</pre>';
+
+                str += 'Char Settings\n';
+                charNamesList.forEach(function (charName, idx){
+                    tempObj = $.extend(true, {}, charSettingsList[charName]);
+                    str += 'Char ' + idx  + '\n';
+                    tempObj.charName = "Char " + idx;
+                    str += '' +  JSON.stringify(tempObj,null,4) + '\n';
+                })
+
+                $('<div id="dialog-settings" title="Settings listing"><textarea style=" width: 98%; height: 98%;">' + str + '</textarea></div>').dialog({
+                      resizable: true,
+                      width: 550,
+                      height: 750,
+                      modal: false,
+                    });        
+            });
+
             // Custom profiles
             tab = addTab("#script_settings", "Custom profiles");
             var temp_html = '';
@@ -3822,8 +3862,6 @@ function _select_Gateway() { // Check for Gateway used to
                 }, 0);
             });
             
-           
-           
             $("#script_settings").tabs({ active: false, collapsible: true });
             setEventHandlers = true;
         }
@@ -3845,8 +3883,41 @@ function _select_Gateway() { // Check for Gateway used to
                 var temp_tab = addTab("#main_tabs", tabs[key]);
                 addInputsUL(temp_tab, 'account', key);
             }
-            $("div#main_tabs").tabs({ active: false, collapsible: true });                
+            var settings_copy_tab = addTab("#main_tabs", "Settings Copy");
+            $("div#main_tabs").tabs({ active: false, collapsible: true });                            
 
+            // Settings copy Tab
+            var temp_html = '';
+            temp_html += '<div><label class="">Copy settings from: </label><select class=" custom_input " id="copy_settings_from">';
+            charNamesList.forEach( function (charName) {
+                temp_html += '<option value="' + charName + '">' + charName + '</option>';
+            })
+            temp_html += '</select></div>';
+            temp_html += '<div><label class="">Copy settings to: (multiple select by holding ctrl/shift)</label></div><div><select multiple="multiple" class=" custom_input " id="copy_settings_to">';
+            charNamesList.forEach( function (charName) {
+                temp_html += '<option value="' + charName + '">' + charName + '</option>';
+            })
+            temp_html += '</select></div><div><button id="copy_settings_button" class="" value="">copy</button></div>';
+            settings_copy_tab.html(temp_html);            
+            
+            $( "#copy_settings_button" ).button();
+            $( "#copy_settings_button" ).click( function(e) {
+                var _from = $("#copy_settings_from").val();
+                var _fromSettings = charSettingsList[_from];
+                if (!_fromSettings) return;
+                var _to = $("#copy_settings_to").val();
+                _to.forEach(function (toName){
+                    if (charNamesList.indexOf(toName) == -1) return;
+                    var newSettings = $.extend(true, {}, _fromSettings);
+                    newSettings.charName = toName;
+                    charSettingsList[toName] = newSettings;
+                    GM_setValue("settings__char__" + toName + "@" + loggedAccount, JSON.stringify(newSettings));
+                    console.log("Copied settings from: ", _from, " to: ", toName);
+                })
+                window.setTimeout(function() {
+                    unsafeWindow.location.href = current_Gateway;
+                }, 0);
+            });
 
             //Statisitcs Tabs
             var temp_tab = addTab("#info_tabs", tr('tab.counters'));
@@ -4426,7 +4497,8 @@ function _select_Gateway() { // Check for Gateway used to
             html += "<tr>";
             html += "<td>" + charName + "</td>";
             for (var i = 0; i < 9; i++) {
-                html += "<td>" + $.trim(charStatisticsList[charName].slotUse[i]).substring(0, 3) + " </td>";
+                var _slot = charStatisticsList[charName].slotUse[i];
+                html += "<td class=' slt_"+ $.trim(_slot).substring(0, 4) + "'>" + $.trim(_slot).substring(0, 4) + " </td>";
             }
             html += "</tr>";
         });
@@ -4436,14 +4508,19 @@ function _select_Gateway() { // Check for Gateway used to
         
         // Visit times and SCA tab
         html = '<table>';
-        html += "<tr><th>Character Name</th><th>Next Profession</th><th>Last SCA</th>";
+        html += "<tr><th>Character Name</th><th>Next Profession</th><th>Last SCA</th><th>Override</th></tr>";
         charNamesList.forEach(function(charName, idx) {
             html += "<tr>";
             html += "<td>" + charName + "</td>";
+            
             if (!chartimers[idx]) html += "<td>No data</td>";
             else    html += "<td><button class=' visitReset ' value=" + (idx + 1) + ">reset</button><span data-timer='" + chartimers[idx] + "' data-timer-length='2'></span></td>";
+            
             if (!charStatisticsList[charName].general.lastSCAVisit) html += "<td>No data</td>";
             else html += "<td>" +  (new Date(charStatisticsList[charName].general.lastSCAVisit)).toLocaleString() + "</td>";
+            
+            if (charSettingsList[charName].general.overrideGlobalSettings) html += "<td><span class='ui-icon  ui-icon-check '></span></td>";
+            else html += "<td></td>";
             html += "</tr>";
         });
         html += "</table>";
