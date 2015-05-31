@@ -62,7 +62,7 @@ http://rawgit.com/Phr33d0m/NW-Profession-Bot/master/Changelog.txt
 
 // Make sure it's running on the main page, no frames
 
-var scriptVersion = 3.5;
+var scriptVersion = 4.0;
 var forceSettingsResetOnUpgrade = true;
 
 if(window.self !== window.top) {
@@ -873,6 +873,7 @@ function _select_Gateway() { // Check for Gateway used to
     var defaultCharStatistics = {
         general: {
             nextTask: null,
+			lastVisit: null,
             lastSCAVisit: null,
             refineCounter: 0,
             refineCounterReset: Date.now(),
@@ -2164,6 +2165,7 @@ function _select_Gateway() { // Check for Gateway used to
         // Updating statistics
         var _stat = charStatisticsList[curCharName].general;
         var _chardata = unsafeWindow.client.dataModel.model.ent.main.currencies;
+		_stat.lastVisit = Date.now();
         _stat.gold = parseInt(_chardata.gold);
         _stat.rad = parseInt(_chardata.roughdiamonds);
         _stat.diamonds = parseInt(_chardata.diamonds);
@@ -3216,7 +3218,7 @@ function _select_Gateway() { // Check for Gateway used to
             return Math.floor(num);
         }
 
-        var total = 0;
+        var total = [0, 0, 0, 0];
         var html = '<table>';
         html += "<tr><th>Character Name</th><th>#slots</th><th>R.Counter</th><th>~ad/h</th>";
         html += "<th>RAD</th><th>AD</th><th>gold</th><th>rBI</th><th>BI</th><th>R.today<th></th></tr>";
@@ -3232,8 +3234,12 @@ function _select_Gateway() { // Check for Gateway used to
             var counterTime = (Date.now() - charStatisticsList[charName].general.refineCounterReset) / 1000 / 60 / 60; // in hours.
             var radh = 0;
             if (counterTime > 0) radh = charStatisticsList[charName].general.refineCounter / counterTime;
-
-            total += charStatisticsList[charName].general.refineCounter;
+			var outdated = (charStatisticsList[charName].general.lastVisit < lastDailyResetTime);
+			
+            total[0] += charStatisticsList[charName].general.refineCounter;
+            total[1] += charStatisticsList[charName].general.diamonds;
+            total[2] += charStatisticsList[charName].general.gold;
+            total[3] += outdated ? 0 : charStatisticsList[charName].general.refined;
 
             html += "<tr>";
             html += "<td>" + charName + "</td>";
@@ -3249,8 +3255,10 @@ function _select_Gateway() { // Check for Gateway used to
             //html += "<td>" + formatNum(charStatisticsList[charName].general.refineLimitLeft) + "</td>";
             html += "</tr>";
         });
+        html += "<tr class='totals'><td>Totals (without AD in ZAX):</td><td></td><td>" +  formatNum(total[0]) +  "</td><td></td>";
+        html += "<td></td><td>" + formatNum(total[1]) + "</td><td>" + formatNum(total[2]) + "</td>";
+        html += "<td></td><td></td><td>" + formatNum(total[3]) + "<td></td></tr>";
         html += "</table>";
-        html += "<div style='margin: 5px 0;'> Total refined: " + total + "</div>";
         html += "<button>Reset Refined Counter</button>";
         $('#rcounters').html(html);
 
