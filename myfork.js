@@ -64,6 +64,7 @@ http://rawgit.com/Phr33d0m/NW-Profession-Bot/master/Changelog.txt
 
 var scriptVersion = 4.0;
 var forceSettingsResetOnUpgrade = true;
+var forceResetOnVerBelow = 3.5;
 
 if(window.self !== window.top) {
     throw "";
@@ -292,7 +293,7 @@ function _select_Gateway() { // Check for Gateway used to
     // Forcing settings clear !
     var ver = GM_getValue("script_version", 0);
     
-    if ((ver < scriptVersion) && forceSettingsResetOnUpgrade) {
+    if ((ver < forceResetOnVerBelow) && forceSettingsResetOnUpgrade) {
         var str = "Detected an upgrade from old version or fresh install.<br />Procceding will wipe all saved settings.<br />Please set characters to active after log in.";  
         $('<div id="dialog-confirm" title="Setting wipe confirm">' + str + '</div>').dialog({
               resizable: true,
